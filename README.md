@@ -1,0 +1,27 @@
+# Frontend - Events List App
+
+Frontend application for Events List App built with Next.js and Ant Design.
+
+## 🚀 Quick Start
+
+```bash
+# Installation
+npm install
+
+# Development
+npm run dev
+
+# Build
+npm run build
+
+# Production
+npm start
+```
+
+## 📋 Key Features
+
+- **Next.js 16+** with **ISR** (Incremental Static Regeneration)
+- **Ant Design** as UI library
+- **Proxy API** - local `/api/*` paths proxied to backend
+- **Security**: Origin checking, CORS, Rate Limiting
+- **Filtering**: Hybrid approach (client-side + server-side)
