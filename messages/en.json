@@ -1,0 +1,38 @@
+{
+  "common": {
+    "title": "Events List App",
+    "description": "Events listing application",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "back": "Back",
+    "home": "Home"
+  },
+  "nav": {
+    "events": "Events",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "events": {
+    "title": "Events",
+    "noEvents": "No events",
+    "filter": "Filter",
+    "details": "Details",
+    "date": "Date",
+    "location": "Location",
+    "category": "Category"
+  },
+  "about": {
+    "title": "About",
+    "content": "Application for browsing events in your city."
+  },
+  "contact": {
+    "title": "Contact",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Submit"
+    }
+  }
+}
+

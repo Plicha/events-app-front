@@ -1,0 +1,38 @@
+{
+  "common": {
+    "title": "Events List App",
+    "description": "Aplikacja do przeglądania wydarzeń",
+    "loading": "Ładowanie...",
+    "error": "Wystąpił błąd",
+    "back": "Wstecz",
+    "home": "Strona główna"
+  },
+  "nav": {
+    "events": "Wydarzenia",
+    "about": "O nas",
+    "contact": "Kontakt"
+  },
+  "events": {
+    "title": "Wydarzenia",
+    "noEvents": "Brak wydarzeń",
+    "filter": "Filtruj",
+    "details": "Szczegóły",
+    "date": "Data",
+    "location": "Lokalizacja",
+    "category": "Kategoria"
+  },
+  "about": {
+    "title": "O nas",
+    "content": "Aplikacja do przeglądania wydarzeń w Twoim mieście."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "form": {
+      "name": "Imię i nazwisko",
+      "email": "Email",
+      "message": "Wiadomość",
+      "submit": "Wyślij"
+    }
+  }
+}
+
