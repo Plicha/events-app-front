@@ -17,13 +17,12 @@ export async function checkRateLimit(
   const windowStart = Math.floor(now / RATE_LIMIT_WINDOW) * RATE_LIMIT_WINDOW
   const key = `rate_limit:${ip}:${windowStart}`
 
-  const count = await incr(key)
-  await expire(key, RATE_LIMIT_WINDOW)
+  const count = await incr(key, RATE_LIMIT_WINDOW)
 
   const remaining = Math.max(0, RATE_LIMIT - count)
   const reset = windowStart + RATE_LIMIT_WINDOW
 
-  if (count > RATE_LIMIT) {
+  if (count >= RATE_LIMIT) {
     throw new RateLimitError(reset - now)
   }
 

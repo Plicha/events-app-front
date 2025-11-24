@@ -77,19 +77,24 @@ export async function set(
   setInMemory(key, value, ttlSeconds)
 }
 
-export async function incr(key: string): Promise<number> {
+export async function incr(key: string, ttlSeconds?: number): Promise<number> {
   const client = getRedisClient()
 
   if (client) {
     try {
-      return await client.incr(key)
+      const result = await client.incr(key)
+      // Set TTL if provided and key is new (count = 1)
+      if (ttlSeconds && result === 1) {
+        await client.expire(key, ttlSeconds)
+      }
+      return result
     } catch (error) {
       console.error('Redis incr error:', error)
-      return incrInMemory(key)
+      return incrInMemory(key, ttlSeconds)
     }
   }
 
-  return incrInMemory(key)
+  return incrInMemory(key, ttlSeconds)
 }
 
 export async function expire(key: string, seconds: number): Promise<void> {
@@ -130,11 +135,17 @@ function setInMemory(key: string, value: string, ttlSeconds?: number): void {
   memoryStore.set(key, { value, expiresAt })
 }
 
-function incrInMemory(key: string): number {
+function incrInMemory(key: string, ttlSeconds?: number): number {
   const item = memoryStore.get(key)
   const currentValue = item ? parseInt(item.value, 10) || 0 : 0
   const newValue = currentValue + 1
-  memoryStore.set(key, { value: String(newValue), expiresAt: 0 })
+  
+  let expiresAt = item?.expiresAt || 0
+  if (!item && ttlSeconds) {
+    expiresAt = Date.now() + ttlSeconds * 1000
+  }
+  
+  memoryStore.set(key, { value: String(newValue), expiresAt })
   return newValue
 }
 

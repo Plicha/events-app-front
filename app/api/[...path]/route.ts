@@ -5,7 +5,7 @@ import { getCachedResponse, setCachedResponse } from '@/lib/api/cache'
 import { ApiClient } from '@/lib/api/client'
 import { OriginNotAllowedError, BackendError, NetworkError } from '@/lib/api/errors'
 
-const BACKEND_URL = process.env.BACKEND_API_URL || 'https://api.eventslist.pl'
+const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:3000/api'
 const apiClient = new ApiClient(BACKEND_URL)
 
 function getClientIP(request: NextRequest): string {
@@ -65,12 +65,14 @@ export async function GET(
   }
 
   try {
-    const backendUrl = new URL(`${BACKEND_URL}${apiPath}`)
+    
+    const params: Record<string, string> = {}
     request.nextUrl.searchParams.forEach((value, key) => {
-      backendUrl.searchParams.set(key, value)
+      params[key] = value
     })
 
-    const data = await apiClient.get(backendUrl.pathname + backendUrl.search, {
+    const data = await apiClient.get(apiPath, {
+      params,
       headers,
     })
 
