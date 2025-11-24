@@ -11,6 +11,7 @@
 !next.config.ts
 !eslint.config.mjs
 !.eslintignore
+!.env.example
 
 # Include app directory
 !app/
