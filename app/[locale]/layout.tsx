@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server'
 import { ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
 import { routing } from '@/lib/i18n/routing'
+import { Header } from '@/components/layout/Header/Header'
 import '../globals.css'
 
 export function generateStaticParams() {
@@ -29,6 +30,7 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <ConfigProvider>
+            <Header />
             {children}
           </ConfigProvider>
         </NextIntlClientProvider>
