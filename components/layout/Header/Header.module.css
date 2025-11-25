@@ -29,3 +29,21 @@
   gap: 16px;
 }
 
+.desktopMenu {
+  display: flex;
+}
+
+.mobileMenuButton {
+  display: none;
+}
+
+@media (max-width: var(--breakpoint-sm)) {
+  .desktopMenu {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: block;
+  }
+}
+
