@@ -21,11 +21,13 @@ export default async function EventsPage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'events' })
+  
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
 
   let events: Event[] = []
 
   try {
-    const apiClient = new ApiClient('/api')
+    const apiClient = new ApiClient(apiBaseUrl)
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
       headers: {
         'x-locale': locale
@@ -45,7 +47,9 @@ export default async function EventsPage({
       {events.length === 0 ? (
         <Empty description={t('noEvents')} />
       ) : (
-        <p>{t('listPlaceholder')}</p>
+        <>
+          <p>{t('listPlaceholder')}</p>
+        </>
       )}
     </main>
   )
