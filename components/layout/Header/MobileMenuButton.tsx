@@ -29,7 +29,6 @@ export function MobileMenuButton({ menuItems, selectedKey }: MobileMenuButtonPro
       <Button
         type="text"
         icon={<MenuOutlined />}
-        className="mobile-menu-button"
       />
     </Popover>
   )
