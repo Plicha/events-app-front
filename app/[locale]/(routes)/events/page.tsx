@@ -1,7 +1,9 @@
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
+import { BackendError, NetworkError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
+import { notFound } from 'next/navigation'
 
 export const revalidate = 300
 
@@ -19,14 +21,22 @@ export default async function EventsPage({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'events' })
 
-  const apiClient = new ApiClient('/api')
-  const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
-    headers: {
-      'x-locale': locale
-    }
-  })
+  let events: Event[] = []
 
-  const events = response.docs || []
+  try {
+    const apiClient = new ApiClient('/api')
+    const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+      headers: {
+        'x-locale': locale
+      }
+    })
+    events = response.docs || []
+  } catch (error) {
+    if (error instanceof BackendError && error.statusCode === 404) {
+      notFound()
+    }
+    throw error
+  }
 
   return (
     <main>
