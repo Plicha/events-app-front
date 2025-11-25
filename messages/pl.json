@@ -15,6 +15,7 @@
   "events": {
     "title": "Wydarzenia",
     "noEvents": "Brak wydarzeń",
+    "listPlaceholder": "Niebawem pojawią się tu wydarzenia",
     "filter": "Filtruj",
     "details": "Szczegóły",
     "date": "Data",
