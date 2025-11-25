@@ -5,6 +5,9 @@ const withNextIntl = createNextIntlPlugin('./lib/i18n/config.ts')
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: ['antd'],
+  },
 }
 
 export default withNextIntl(nextConfig)
