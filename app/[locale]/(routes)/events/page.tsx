@@ -4,6 +4,7 @@ import { ApiClient } from '@/lib/api/client'
 import { BackendError, NetworkError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
+import { Empty } from 'antd'
 
 export const revalidate = 300
 
@@ -41,7 +42,11 @@ export default async function EventsPage({
   return (
     <main>
       <h1>{t('title')}</h1>
-      <p>Events list will be here</p>
+      {events.length === 0 ? (
+        <Empty description={t('noEvents')} />
+      ) : (
+        <p>Events list will be here</p>
+      )}
     </main>
   )
 }
