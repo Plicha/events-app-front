@@ -15,6 +15,7 @@
   "events": {
     "title": "Events",
     "noEvents": "No events",
+    "listPlaceholder": "Events will appear here soon",
     "filter": "Filter",
     "details": "Details",
     "date": "Date",

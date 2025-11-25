@@ -45,7 +45,7 @@ export default async function EventsPage({
       {events.length === 0 ? (
         <Empty description={t('noEvents')} />
       ) : (
-        <p>Events list will be here</p>
+        <p>{t('listPlaceholder')}</p>
       )}
     </main>
   )
