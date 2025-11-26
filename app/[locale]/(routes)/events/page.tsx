@@ -5,6 +5,7 @@ import { BackendError, NetworkError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
 import { Empty } from 'antd'
+import { getTodayDateString } from '@/lib/utils/date'
 
 export const revalidate = 300
 
@@ -29,6 +30,9 @@ export default async function EventsPage({
   try {
     const apiClient = new ApiClient(apiBaseUrl)
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+      params: {
+        from: getTodayDateString()
+      },
       headers: {
         'x-locale': locale
       }
@@ -49,7 +53,12 @@ export default async function EventsPage({
           <Empty description={t('noEvents')} />
         ) : (
           <>
-            <p>{t('listPlaceholder')}</p>
+            <pre>{events.map(event => {
+              const title = typeof event.title === 'string' 
+                ? event.title 
+                : event.title[locale as 'pl' | 'en'] || event.title.pl || ''
+              return <div key={event.id}> {event.id}. {title}</div>
+            })}</pre>
           </>
         )}
       </div>
