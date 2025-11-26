@@ -21,7 +21,14 @@
     "date": "Date",
     "location": "Location",
     "category": "Category",
-    "searchPlaceholder": "Search events..."
+    "searchPlaceholder": "Search events...",
+    "dateRangePresets": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "thisWeekend": "This weekend",
+      "next7Days": "Next 7 days",
+      "next30Days": "Next 30 days"
+    }
   },
   "about": {
     "title": "About",

@@ -1,6 +1,7 @@
 import { Row, Col } from 'antd'
 import { getTranslations } from 'next-intl/server'
 import { SearchBar } from './SearchBar'
+import { DateRangeFilter } from './DateRangeFilter'
 
 interface EventFiltersProps {
   locale: string
@@ -15,7 +16,7 @@ export async function EventFilters({ locale }: EventFiltersProps) {
         <SearchBar placeholder={t('searchPlaceholder')} />
       </Col>
       <Col xs={24} sm={24} md={6}>
-        Col 2
+        <DateRangeFilter locale={locale} />
       </Col>
       <Col xs={24} sm={24} md={6}>
         Col 3

@@ -21,17 +21,26 @@ export default async function EventsPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ search?: string }>
+  searchParams: Promise<{ search?: string; from?: string; to?: string }>
 }) {
   const { locale } = await params
-  const { search } = await searchParams
+  const { search, from, to } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
 
   const apiParams: Record<string, string> = {
-    from: getTodayDateString(),
     locale: locale
+  }
+
+  if (from) {
+    apiParams.from = from
+  } else {
+    apiParams.from = getTodayDateString()
+  }
+
+  if (to) {
+    apiParams.to = to
   }
 
   if (search) {
@@ -60,16 +69,18 @@ export default async function EventsPage({
     <main className="default-padding-y">
       <div className="container">
         <h1>{t('title')}</h1>
+        <br />
         <EventFilters locale={locale} />
         {events.length === 0 ? (
           <Empty description={t('noEvents')} />
         ) : (
           <>
+          <br />
             <pre>{events.map(event => {
               const title = typeof event.title === 'string' 
                 ? event.title 
                 : event.title[locale as 'pl' | 'en'] || event.title.pl || ''
-              return <div key={event.id}> {event.id}. {title}</div>
+              return <div key={event.id}> {event.id}. {title} - {event.startsAt}</div>
             })}</pre>
           </>
         )}

@@ -21,7 +21,14 @@
     "date": "Data",
     "location": "Lokalizacja",
     "category": "Kategoria",
-    "searchPlaceholder": "Szukaj wydarzeń..."
+    "searchPlaceholder": "Szukaj wydarzeń...",
+    "dateRangePresets": {
+      "today": "Dziś",
+      "tomorrow": "Jutro",
+      "thisWeekend": "Ten weekend",
+      "next7Days": "Najbliższe 7 dni",
+      "next30Days": "Najbliższe 30 dni"
+    }
   },
   "about": {
     "title": "O nas",

@@ -5,6 +5,8 @@ import { ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
 import { routing } from '@/lib/i18n/routing'
 import { Header } from '@/components/layout/Header/Header'
+import plPL from 'antd/locale/pl_PL'
+import enUS from 'antd/locale/en_US'
 import '@/styles/globals.scss'
 
 export function generateStaticParams() {
@@ -31,7 +33,7 @@ export default async function LocaleLayout({
       <body>
         <AntdRegistry>
           <NextIntlClientProvider messages={messages}>
-            <ConfigProvider>
+            <ConfigProvider locale={locale === 'pl' ? plPL : enUS}>
               <Header locale={locale} />
               {children}
             </ConfigProvider>
