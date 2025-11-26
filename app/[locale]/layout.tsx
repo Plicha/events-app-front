@@ -5,7 +5,7 @@ import { ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
 import { routing } from '@/lib/i18n/routing'
 import { Header } from '@/components/layout/Header/Header'
-import '../globals.css'
+import '@/styles/globals.scss'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))

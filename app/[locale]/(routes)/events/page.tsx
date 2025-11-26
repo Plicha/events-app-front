@@ -42,15 +42,17 @@ export default async function EventsPage({
   }
 
   return (
-    <main>
-      <h1>{t('title')}</h1>
-      {events.length === 0 ? (
-        <Empty description={t('noEvents')} />
-      ) : (
-        <>
-          <p>{t('listPlaceholder')}</p>
-        </>
-      )}
+    <main className="default-padding-y">
+      <div className="container">
+        <h1>{t('title')}</h1>
+        {events.length === 0 ? (
+          <Empty description={t('noEvents')} />
+        ) : (
+          <>
+            <p>{t('listPlaceholder')}</p>
+          </>
+        )}
+      </div>
     </main>
   )
 }

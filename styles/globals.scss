@@ -1,0 +1,31 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+  
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+:root {
+--foreground-rgb: 0, 0, 0;
+--background-start-rgb: 214, 219, 220;
+--background-end-rgb: 255, 255, 255;
+}
+  
+.container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $container-padding-x;
+}
+
+.default-padding-y {
+  padding: $default-padding-y 0;
+  @media (max-width: $breakpoint-xs) {
+    padding: $default-padding-y-mobile 0;
+  }
+}
+  
