@@ -20,7 +20,8 @@
     "details": "Details",
     "date": "Date",
     "location": "Location",
-    "category": "Category"
+    "category": "Category",
+    "searchPlaceholder": "Search events..."
   },
   "about": {
     "title": "About",
