@@ -5,6 +5,8 @@ import { BackendError, NetworkError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
 import { Empty } from 'antd'
+import { getTodayDateString } from '@/lib/utils/date'
+import { EventFilters } from '@/components/features/events/EventFilters/EventFilters'
 
 export const revalidate = 300
 
@@ -15,20 +17,33 @@ export function generateStaticParams() {
 }
 
 export default async function EventsPage({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ search?: string }>
 }) {
   const { locale } = await params
+  const { search } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+
+  const apiParams: Record<string, string> = {
+    from: getTodayDateString(),
+    locale: locale
+  }
+
+  if (search) {
+    apiParams.search = search
+  }
 
   let events: Event[] = []
 
   try {
     const apiClient = new ApiClient(apiBaseUrl)
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+      params: apiParams,
       headers: {
         'x-locale': locale
       }
@@ -45,11 +60,17 @@ export default async function EventsPage({
     <main className="default-padding-y">
       <div className="container">
         <h1>{t('title')}</h1>
+        <EventFilters locale={locale} />
         {events.length === 0 ? (
           <Empty description={t('noEvents')} />
         ) : (
           <>
-            <p>{t('listPlaceholder')}</p>
+            <pre>{events.map(event => {
+              const title = typeof event.title === 'string' 
+                ? event.title 
+                : event.title[locale as 'pl' | 'en'] || event.title.pl || ''
+              return <div key={event.id}> {event.id}. {title}</div>
+            })}</pre>
           </>
         )}
       </div>

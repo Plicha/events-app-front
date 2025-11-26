@@ -59,10 +59,10 @@ export async function GET(
   }
 
   const headers: Record<string, string> = {}
-  const locale = request.headers.get('x-locale')
-  if (locale) {
+  const locale = request.headers.get('x-locale') || request.nextUrl.searchParams.get('locale')
+  
+  if (locale) 
     headers['x-locale'] = locale
-  }
 
   try {
     
