@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "^1.2.0",
     "antd": "^5.29.1",
     "ioredis": "^5.8.2",
     "next": "^16.0.3",
@@ -24,6 +25,7 @@
     "@types/react-dom": "^19.0.2",
     "eslint": "^9.18.0",
     "eslint-config-next": "^16.0.3",
+    "sass": "^1.94.2",
     "typescript": "^5.9.3"
   }
 }

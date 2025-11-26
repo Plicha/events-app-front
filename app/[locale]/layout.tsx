@@ -1,5 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
 import { routing } from '@/lib/i18n/routing'
@@ -26,14 +27,16 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <ConfigProvider>
-            <Header />
-            {children}
-          </ConfigProvider>
-        </NextIntlClientProvider>
+        <AntdRegistry>
+          <NextIntlClientProvider messages={messages}>
+            <ConfigProvider>
+              <Header locale={locale} />
+              {children}
+            </ConfigProvider>
+          </NextIntlClientProvider>
+        </AntdRegistry>
       </body>
     </html>
   )

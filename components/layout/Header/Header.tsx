@@ -1,28 +1,19 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { Menu, Button, Dropdown, Popover } from 'antd'
+import { getTranslations } from 'next-intl/server'
+import { headers } from 'next/headers'
+import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
-import { Link, usePathname, useRouter } from '@/lib/i18n/routing'
-import { useLocale, useTranslations } from 'next-intl'
-import { MenuOutlined, GlobalOutlined } from '@ant-design/icons'
-import styles from './Header.module.css'
+import { Link } from '@/lib/i18n/routing'
+import { MobileMenuButton } from './MobileMenuButton'
+import styles from './Header.module.scss'
 
-export function Header() {
-  const t = useTranslations('nav')
-  const locale = useLocale()
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isMobile, setIsMobile] = useState(false)
+interface HeaderProps {
+  locale: string
+}
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+export async function Header({ locale }: HeaderProps) {
+  const t = await getTranslations({ locale, namespace: 'nav' })
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || '/'
 
   const menuItems: MenuProps['items'] = [
     {
@@ -58,39 +49,7 @@ export function Header() {
     return null
   }
 
-  const getCanonicalPath = (localizedPath: string): '/' | '/events' | '/about' | '/contact' => {
-    if (localizedPath.startsWith('/wydarzenia') || localizedPath.startsWith('/events')) return '/events'
-    if (localizedPath.startsWith('/o-nas') || localizedPath.startsWith('/about')) return '/about'
-    if (localizedPath.startsWith('/kontakt') || localizedPath.startsWith('/contact')) return '/contact'
-    return '/'
-  }
-
-  const handleLocaleChange = (newLocale: string) => {
-    const canonicalPath = getCanonicalPath(pathname)
-    router.replace(canonicalPath, { locale: newLocale })
-  }
-
-  const localeMenuItems: MenuProps['items'] = [
-    {
-      key: 'pl',
-      label: 'Polski',
-      onClick: () => handleLocaleChange('pl'),
-    },
-    {
-      key: 'en',
-      label: 'English',
-      onClick: () => handleLocaleChange('en'),
-    },
-  ]
-
-  const mobileMenuContent = (
-    <Menu
-      mode="vertical"
-      selectedKeys={getSelectedKey() ? [getSelectedKey()!] : []}
-      items={menuItems}
-      style={{ border: 'none', minWidth: 200 }}
-    />
-  )
+  const selectedKey = getSelectedKey()
 
   return (
     <header className={styles.header}>
@@ -100,37 +59,17 @@ export function Header() {
         </Link>
 
         <div className={styles.navContainer}>
-          {!isMobile && (
-            <Menu
-              mode="horizontal"
-              selectedKeys={getSelectedKey() ? [getSelectedKey()!] : []}
-              items={menuItems}
-              style={{ border: 'none' }}
-            />
-          )}
+          <Menu
+            mode="horizontal"
+            selectedKeys={selectedKey ? [selectedKey] : []}
+            items={menuItems}
+            className={styles.desktopMenu}
+            style={{ border: 'none' }}
+          />
 
-          {/*<Dropdown menu={{ items: localeMenuItems }} placement="bottomRight">
-            <Button 
-              type="text" 
-              icon={<GlobalOutlined />}
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              {locale.toUpperCase()}
-            </Button>
-          </Dropdown>*/}
-
-          {isMobile && (
-            <Popover
-              content={mobileMenuContent}
-              trigger="click"
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MenuOutlined />}
-              />
-            </Popover>
-          )}
+          <div className={styles.mobileMenuButton}>
+            <MobileMenuButton menuItems={menuItems} selectedKey={selectedKey} />
+          </div>
         </div>
       </nav>
     </header>
