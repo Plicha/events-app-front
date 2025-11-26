@@ -20,7 +20,8 @@
     "details": "Szczegóły",
     "date": "Data",
     "location": "Lokalizacja",
-    "category": "Kategoria"
+    "category": "Kategoria",
+    "searchPlaceholder": "Szukaj wydarzeń..."
   },
   "about": {
     "title": "O nas",
