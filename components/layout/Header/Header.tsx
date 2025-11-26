@@ -4,7 +4,7 @@ import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
 import { Link } from '@/lib/i18n/routing'
 import { MobileMenuButton } from './MobileMenuButton'
-import styles from './Header.module.css'
+import styles from './Header.module.scss'
 
 interface HeaderProps {
   locale: string
