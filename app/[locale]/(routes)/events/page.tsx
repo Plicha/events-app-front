@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation'
 import { Empty } from 'antd'
 import { getTodayDateString } from '@/lib/utils/date'
 import { EventFilters } from '@/components/features/events/EventFilters/EventFilters'
+import { EventsPagination } from '@/components/features/events/EventsPagination/EventsPagination'
+import { Suspense } from 'react'
 
 export const revalidate = 300
 
@@ -21,10 +23,10 @@ export default async function EventsPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string; category?: string }>
+  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string; category?: string; page?: string; limit?: string }>
 }) {
   const { locale } = await params
-  const { search, from, to, city, category } = await searchParams
+  const { search, from, to, city, category, page, limit } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
@@ -55,7 +57,16 @@ export default async function EventsPage({
     apiParams.category = category
   }
 
+  if (page) {
+    apiParams.page = page
+  }
+
+  if (limit) {
+    apiParams.limit = limit
+  }
+
   let events: Event[] = []
+  let paginationData: { current: number; total: number; pageSize: number } | null = null
 
   try {
     const apiClient = new ApiClient(apiBaseUrl)
@@ -73,7 +84,34 @@ export default async function EventsPage({
       headers,
     })
     
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Frontend] API Response:', {
+        docsCount: response.docs?.length || 0,
+        totalDocs: response.totalDocs,
+        page: response.page,
+        totalPages: response.totalPages,
+        limit: response.limit,
+        hasNextPage: response.hasNextPage,
+        hasPrevPage: response.hasPrevPage,
+        responseKeys: Object.keys(response),
+      })
+    }
+    
     events = Array.isArray(response.docs) ? response.docs : []
+    
+    if (response.totalDocs !== undefined && response.page !== undefined && response.limit !== undefined) {
+      paginationData = {
+        current: response.page,
+        total: response.totalDocs,
+        pageSize: response.limit,
+      }
+    } else if (process.env.NODE_ENV === 'development') {
+      console.warn('[Frontend] Pagination data missing:', {
+        totalDocs: response.totalDocs,
+        page: response.page,
+        limit: response.limit,
+      })
+    }
   } catch (error) {
     if (error instanceof BackendError && error.statusCode === 404) {
       notFound()
@@ -98,6 +136,17 @@ export default async function EventsPage({
                 : event.title[locale as 'pl' | 'en'] || event.title.pl || ''
               return <div key={event.id}> {event.id}. {title} - {event.startsAt}</div>
             })}</pre>
+            {paginationData && (
+              <Suspense fallback={null}>
+                <br />
+                <EventsPagination
+                  current={paginationData.current}
+                  total={paginationData.total}
+                  pageSize={paginationData.pageSize}
+                  locale={locale}
+                />
+              </Suspense>
+            )}
           </>
         )}
       </div>
