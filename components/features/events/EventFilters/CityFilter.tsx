@@ -53,24 +53,23 @@ function CityFilterContent({ locale }: { locale: string }) {
   }, [locale, countyId])
 
   useEffect(() => {
+    if (loading) return
+    
     const cityParam = searchParams.get('city')
     
-    if (!loading && cities.length > 0) {
-      if (cityParam) {
-        const cityExists = cities.some(city => String(city.id) === String(cityParam))
-        if (cityExists) {
-          setValue(prevValue => {
-            const currentValueStr = prevValue ? String(prevValue) : null
-            const paramStr = String(cityParam)
-            return currentValueStr !== paramStr ? String(cityParam) : prevValue
-          })
-        } else {
-          setValue(undefined)
-        }
-      } else {
-        setValue(undefined)
-      }
-    } else if (!loading && cityParam && cities.length === 0) {
+    if (!cityParam || cities.length === 0) {
+      setValue(undefined)
+      return
+    }
+    
+    const cityExists = cities.some(city => String(city.id) === String(cityParam))
+    if (cityExists) {
+      setValue(prevValue => {
+        const currentValueStr = prevValue ? String(prevValue) : null
+        const paramStr = String(cityParam)
+        return currentValueStr !== paramStr ? String(cityParam) : prevValue
+      })
+    } else {
       setValue(undefined)
     }
   }, [searchParams, cities, loading])
