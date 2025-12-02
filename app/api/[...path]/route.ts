@@ -60,9 +60,13 @@ export async function GET(
 
   const headers: Record<string, string> = {}
   const locale = request.headers.get('x-locale') || request.nextUrl.searchParams.get('locale')
+  const countyId = request.headers.get('x-county-id')
   
   if (locale) 
     headers['x-locale'] = locale
+  
+  if (countyId) 
+    headers['x-county-id'] = countyId
 
   try {
     
@@ -84,7 +88,7 @@ export async function GET(
       response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
       response.headers.set(
         'Access-Control-Allow-Headers',
-        'Content-Type, x-locale'
+        'Content-Type, x-locale, x-county-id'
       )
     }
 
@@ -131,7 +135,7 @@ export async function OPTIONS(request: NextRequest) {
     headers: {
       'Access-Control-Allow-Origin': originCheck.origin || '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, x-locale',
+      'Access-Control-Allow-Headers': 'Content-Type, x-locale, x-county-id',
       'Access-Control-Max-Age': '86400',
     },
   })

@@ -28,7 +28,9 @@
       "thisWeekend": "This weekend",
       "next7Days": "Next 7 days",
       "next30Days": "Next 30 days"
-    }
+    },
+    "cityPlaceholder": "Select city",
+    "cityFilterLabel": "City"
   },
   "about": {
     "title": "About",

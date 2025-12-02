@@ -21,10 +21,10 @@ export default async function EventsPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ search?: string; from?: string; to?: string }>
+  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string }>
 }) {
   const { locale } = await params
-  const { search, from, to } = await searchParams
+  const { search, from, to, city } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
@@ -47,15 +47,26 @@ export default async function EventsPage({
     apiParams.search = search
   }
 
+  if (city) {
+    apiParams.city = city
+  }
+
   let events: Event[] = []
 
   try {
     const apiClient = new ApiClient(apiBaseUrl)
+    const headers: Record<string, string> = {
+      'x-locale': locale,
+    }
+
+    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
+    if (countyId) {
+      headers['x-county-id'] = countyId
+    }
+
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
       params: apiParams,
-      headers: {
-        'x-locale': locale
-      }
+      headers,
     })
     events = response.docs || []
   } catch (error) {
