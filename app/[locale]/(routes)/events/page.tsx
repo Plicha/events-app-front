@@ -68,7 +68,8 @@ export default async function EventsPage({
       params: apiParams,
       headers,
     })
-    events = response.docs || []
+    
+    events = Array.isArray(response.docs) ? response.docs : []
   } catch (error) {
     if (error instanceof BackendError && error.statusCode === 404) {
       notFound()
