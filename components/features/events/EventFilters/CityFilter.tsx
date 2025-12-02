@@ -13,7 +13,7 @@ function CityFilterContent({ locale }: { locale: string }) {
   const pathname = usePathname()
 
   const cityParam = searchParams.get('city')
-  const [value, setValue] = useState<string | undefined>(cityParam || undefined)
+  const [value, setValue] = useState<string | undefined>(undefined)
   const [cities, setCities] = useState<City[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -54,22 +54,40 @@ function CityFilterContent({ locale }: { locale: string }) {
 
   useEffect(() => {
     const cityParam = searchParams.get('city')
-    if (cityParam !== value) {
-      setValue(cityParam || undefined)
+    
+    if (!loading && cities.length > 0) {
+      if (cityParam) {
+        const cityExists = cities.some(city => String(city.id) === String(cityParam))
+        if (cityExists) {
+          setValue(prevValue => {
+            const currentValueStr = prevValue ? String(prevValue) : null
+            const paramStr = String(cityParam)
+            return currentValueStr !== paramStr ? String(cityParam) : prevValue
+          })
+        } else {
+          setValue(undefined)
+        }
+      } else {
+        setValue(undefined)
+      }
+    } else if (!loading && cityParam && cities.length === 0) {
+      setValue(undefined)
     }
-  }, [searchParams, value])
+  }, [searchParams, cities, loading])
 
-  const handleChange = (cityId: string | undefined) => {
-    setValue(cityId)
+  const handleChange = (cityId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (cityId) {
-      params.set('city', cityId)
+      params.set('city', String(cityId))
+      setValue(String(cityId))
     } else {
       params.delete('city')
+      setValue(undefined)
     }
 
     router.push(`${pathname}?${params.toString()}`)
+    router.refresh()
   }
 
   const getCityName = (city: City): string => {
@@ -84,10 +102,13 @@ function CityFilterContent({ locale }: { locale: string }) {
     return option.label.toLowerCase().includes(input.toLowerCase())
   }
 
+  const selectedCity = value ? cities.find(city => String(city.id) === String(value)) : null
+  const displayValue = (!loading && selectedCity && value) ? String(value) : null
+
   return (
     <Select
       placeholder={t('cityPlaceholder')}
-      value={value}
+      value={displayValue}
       onChange={handleChange}
       showSearch
       allowClear
@@ -96,8 +117,9 @@ function CityFilterContent({ locale }: { locale: string }) {
       style={{ width: '100%' }}
       options={cities.map((city) => ({
         label: getCityName(city),
-        value: city.id,
+        value: String(city.id),
       }))}
+      notFoundContent={loading ? null : undefined}
     />
   )
 }
