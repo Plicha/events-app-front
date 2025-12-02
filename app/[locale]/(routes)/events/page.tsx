@@ -21,10 +21,10 @@ export default async function EventsPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string }>
+  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string; category?: string }>
 }) {
   const { locale } = await params
-  const { search, from, to, city } = await searchParams
+  const { search, from, to, city, category } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
@@ -49,6 +49,10 @@ export default async function EventsPage({
 
   if (city) {
     apiParams.city = city
+  }
+
+  if (category) {
+    apiParams.category = category
   }
 
   let events: Event[] = []
