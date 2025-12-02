@@ -29,8 +29,8 @@
       "next7Days": "Najbliższe 7 dni",
       "next30Days": "Najbliższe 30 dni"
     },
-    "cityPlaceholder": "Wybierz miasto",
-    "cityFilterLabel": "Miasto"
+    "cityPlaceholder": "Wybierz miejscowość",
+    "cityFilterLabel": "Miejscowość"
   },
   "about": {
     "title": "O nas",
