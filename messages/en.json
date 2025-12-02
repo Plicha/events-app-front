@@ -30,7 +30,9 @@
       "next30Days": "Next 30 days"
     },
     "cityPlaceholder": "Select location",
-    "cityFilterLabel": "Location"
+    "cityFilterLabel": "Location",
+    "categoryPlaceholder": "Select category",
+    "categoryFilterLabel": "Category"
   },
   "about": {
     "title": "About",
