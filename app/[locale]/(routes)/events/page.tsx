@@ -101,7 +101,7 @@ export default async function EventsPage({
   return (
     <main className="default-padding-y">
       <div className="container">
-        <h1>{t('title')}</h1>
+        <h1 className="title">{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />
         <Row style={{ marginTop: 16 }} justify="space-between" gutter={[16, 8]}>
