@@ -104,16 +104,17 @@ export default async function EventsPage({
         <h1>{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />
-        <Row style={{ marginTop: 16 }} justify="space-between" gutter={16}>
-          <Col xs={24} sm={24} md={4}>
+        <Row style={{ marginTop: 16 }} justify="space-between" gutter={[16, 8]}>
+          <Col xs={12} sm={12} md={4}>
             <PageSizeSelector locale={locale} currentPageSize={paginationData?.pageSize || 20} />
           </Col>
-          <Col xs={24} sm={24} md={4}>
+          <Col xs={12} sm={12} md={4}>
             <SortSelector locale={locale} currentSort={sort || 'asc'} />
             </Col>
         </Row>
         <br />
         <EventsList events={events} locale={locale} />
+        <br />
         {paginationData && events.length > 0 && (
           <Suspense fallback={null}>
             <br />

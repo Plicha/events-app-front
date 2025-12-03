@@ -10,6 +10,7 @@ import { extractTextFromRichText, truncateText, getLocalizedText } from '@/lib/u
 import dayjs from 'dayjs'
 import 'dayjs/locale/pl'
 import 'dayjs/locale/en'
+import styles from './EventCard.module.scss'
 
 const { Title, Text } = Typography
 
@@ -166,35 +167,26 @@ export function EventCard({ event, locale }: EventCardProps) {
 
   const cardContent = (
     <Card>
-        <Row gutter={16}>
-          <Col xs={24} sm={8} md={6}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={6} md={4}>
             {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={title}
-                style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
-                preview={false}
-              />
+              <div className={styles.imageContainer}>
+                <Image
+                  src={imageUrl}
+                  alt={title}
+                  fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
+                  preview={false}
+                />
+              </div>
             ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '200px',
-                  backgroundColor: '#f5f5f5',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#999',
-                }}
-              >
-                <TagOutlined style={{ fontSize: 48 }} />
+              <div className={styles.placeholderContainer}>
+                <TagOutlined className={styles.placeholderIcon} />
               </div>
             )}
           </Col>
-          <Col xs={24} sm={16} md={18}>
-            <Space direction="vertical" size="small" style={{ width: '100%' }}>
-              <Title level={4} style={{ margin: 0 }}>
+          <Col xs={24} sm={18} md={20}>
+            <Space direction="vertical" size="small" className={styles.contentSpace}>
+              <Title level={4} className={styles.title}>
                 {title}
               </Title>
               
@@ -217,14 +209,15 @@ export function EventCard({ event, locale }: EventCardProps) {
               </Space>
               
               {truncatedSummary && (
-                <Text type="secondary" style={{ display: 'block' }}>
+                <Text type="secondary" className={styles.summaryText}>
                   {truncatedSummary}
                 </Text>
               )}
-              
-              <Link href={eventUrl}>
-                <Button type="primary">{t('viewDetails')}</Button>
-              </Link>
+              <div className={styles.viewDetailsButtonWrapper}>
+                <Link href={eventUrl}>
+                  <Button type="primary">{t('viewDetails')}</Button>
+                </Link>
+              </div>
             </Space>
           </Col>
         </Row>
