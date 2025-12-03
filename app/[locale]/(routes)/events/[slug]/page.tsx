@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
+import { Empty } from 'antd'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({
@@ -16,9 +17,10 @@ export default async function EventDetailsPage({
   const t = await getTranslations({ locale, namespace: 'events' })
 
   return (
-    <main>
-      <h1>{t('details')}</h1>
-      <p>Event slug: {slug}</p>
+    <main className="default-padding-y">
+      <div className="container">
+        <Empty description="Strona w budowie" />
+      </div>
     </main>
   )
 }
