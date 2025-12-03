@@ -25,37 +25,73 @@ function formatEventDate(dateString: string, locale: string): string {
   return date.format('DD.MM.YYYY, HH:mm')
 }
 
-function getEventCoverUrl(cover: Event['cover']): string | null {
-  if (!cover) return null
-  
+function buildMediaUrl(urlOrPath: string): string {
+  if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
+    return urlOrPath
+  }
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_API_URL?.replace('/api', '') || 'http://localhost:3000'
+  const backendBaseUrl = backendUrl.replace(/\/+$/, '')
+  const normalizedPath = urlOrPath.startsWith('/') ? urlOrPath : `/${urlOrPath}`
+
+  return `${backendBaseUrl}${normalizedPath}`
+}
+
+function getEventCoverUrl(cover: Event['cover'], hostImageUrl?: string): string | null {
+  if (!cover) {
+    return hostImageUrl || null
+  }
+
   if (typeof cover === 'string') {
-    return cover
+    const isUrl = cover.startsWith('http://') || cover.startsWith('https://') || cover.startsWith('/')
+    return isUrl ? cover : hostImageUrl || null
   }
-  
-  if (typeof cover === 'object' && cover.url) {
-    return cover.url
+
+  if (typeof cover !== 'object') {
+    return hostImageUrl || null
   }
-  
-  return null
+
+  const coverObj = cover as any
+
+  return coverObj.url
+    ? buildMediaUrl(coverObj.url)
+    : coverObj.filename
+    ? buildMediaUrl(`/api/media/file/${coverObj.filename}`)
+    : coverObj.id
+    ? buildMediaUrl(`/api/media/${coverObj.id}`)
+    : hostImageUrl || null
 }
 
 function getCategoryIconUrl(categories: Event['categories']): string | null {
-  if (!categories || categories.length === 0) return null
-  
-  const firstCategory = Array.isArray(categories) ? categories[0] : null
-  if (!firstCategory) return null
-  
-  const category = typeof firstCategory === 'object' ? firstCategory : null
-  if (!category || !category.icon) return null
-  
-  if (typeof category.icon === 'string') {
-    return category.icon
+  if (!categories || !Array.isArray(categories) || categories.length === 0) {
+    return null
   }
-  
-  if (typeof category.icon === 'object' && category.icon.url) {
-    return category.icon.url
+
+  const firstCategory = categories[0]
+  if (!firstCategory || typeof firstCategory !== 'object') {
+    return null
   }
-  
+
+  const icon = (firstCategory as any).icon
+  if (!icon) {
+    return null
+  }
+
+  if (typeof icon === 'string') {
+    return buildMediaUrl(icon)
+  }
+
+  if (typeof icon === 'object') {
+    const iconObj = icon as any
+    return iconObj.url
+      ? buildMediaUrl(iconObj.url)
+      : iconObj.filename
+      ? buildMediaUrl(`/api/media/file/${iconObj.filename}`)
+      : iconObj.id
+      ? buildMediaUrl(`/api/media/${iconObj.id}`)
+      : null
+  }
+
   return null
 }
 
@@ -63,37 +99,47 @@ function getCategoryName(category: Category, locale: string): string {
   if (typeof category.name === 'string') {
     return category.name
   }
-  return category.name[locale as 'pl' | 'en'] || category.name.pl || category.name.en || ''
+  const localizedName = category.name[locale as 'pl' | 'en'] || category.name.pl || category.name.en
+  return localizedName || ''
 }
 
 function getCategoriesText(categories: Event['categories'], locale: string): string {
-  if (!categories || categories.length === 0) return ''
-  
-  const categoryNames = Array.isArray(categories)
-    ? categories
-        .filter((cat): cat is Category => typeof cat === 'object')
-        .map(cat => getCategoryName(cat, locale))
-    : []
-  
+  if (!categories || !Array.isArray(categories) || categories.length === 0) {
+    return ''
+  }
+
+  const categoryNames = categories
+    .filter((cat): cat is Category => typeof cat === 'object')
+    .map(cat => getCategoryName(cat, locale))
+    .filter(Boolean)
+
   return categoryNames.join(', ')
 }
 
 function getCityName(city: Event['city'], locale: string): string {
-  if (typeof city === 'string') return ''
-  
+  if (typeof city === 'string' || !city) {
+    return ''
+  }
+
   if (typeof city.name === 'string') {
     return city.name
   }
-  return city.name[locale as 'pl' | 'en'] || city.name.pl || city.name.en || ''
+
+  const localizedName = city.name[locale as 'pl' | 'en'] || city.name.pl || city.name.en
+  return localizedName || ''
 }
 
 function getVenueName(venue: Event['venue'], locale: string): string {
-  if (!venue || typeof venue === 'string') return ''
-  
+  if (!venue || typeof venue === 'string') {
+    return ''
+  }
+
   if (typeof venue.name === 'string') {
     return venue.name
   }
-  return venue.name[locale as 'pl' | 'en'] || venue.name.pl || venue.name.en || ''
+
+  const localizedName = venue.name[locale as 'pl' | 'en'] || venue.name.pl || venue.name.en
+  return localizedName || ''
 }
 
 function getEventSlug(event: Event): string {
@@ -102,7 +148,7 @@ function getEventSlug(event: Event): string {
 
 export function EventCard({ event, locale }: EventCardProps) {
   const t = useTranslations('events')
-  const coverUrl = getEventCoverUrl(event.cover)
+  const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl)
   const categoryIconUrl = getCategoryIconUrl(event.categories)
   const imageUrl = coverUrl || categoryIconUrl
   
@@ -118,9 +164,8 @@ export function EventCard({ event, locale }: EventCardProps) {
   const eventSlug = getEventSlug(event)
   const eventUrl = `/${locale}/events/${eventSlug}`
 
-  return (
-    <Badge.Ribbon text={event.isPromoted ? t('promoted') : null} color="red">
-      <Card>
+  const cardContent = (
+    <Card>
         <Row gutter={16}>
           <Col xs={24} sm={8} md={6}>
             {imageUrl ? (
@@ -129,6 +174,7 @@ export function EventCard({ event, locale }: EventCardProps) {
                 alt={title}
                 style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                 fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
+                preview={false}
               />
             ) : (
               <div
@@ -157,7 +203,7 @@ export function EventCard({ event, locale }: EventCardProps) {
                   <CalendarOutlined /> {formattedDate}
                 </Text>
                 
-                {(venueName || cityName) && (
+                {[venueName, cityName].filter(Boolean).length > 0 && (
                   <Text>
                     <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
                   </Text>
@@ -183,7 +229,16 @@ export function EventCard({ event, locale }: EventCardProps) {
           </Col>
         </Row>
       </Card>
-    </Badge.Ribbon>
   )
+
+  if (event.isPromoted) {
+    return (
+      <Badge.Ribbon text={t('promoted')} color="red">
+        {cardContent}
+      </Badge.Ribbon>
+    )
+  }
+
+  return cardContent
 }
 
