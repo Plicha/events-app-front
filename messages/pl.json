@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Events List App",
+    "title": "Wydarzenia w Twoim mieście",
     "description": "Aplikacja do przeglądania wydarzeń",
     "loading": "Ładowanie...",
     "error": "Wystąpił błąd",
@@ -37,6 +37,7 @@
     "sortDesc": "Data: najpóźniejsze",
     "sortPlaceholder": "Sortuj",
     "viewDetails": "Zobacz więcej",
+    "viewAllEvents": "Zobacz wszystkie wydarzenia",
     "free": "Bezpłatne",
     "promoted": "Promowane",
     "noImage": "Brak obrazu"
