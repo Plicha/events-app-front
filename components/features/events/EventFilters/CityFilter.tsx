@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { Select } from 'antd'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -12,41 +12,33 @@ function CityFilterContent({ locale }: { locale: string }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  const cityParam = searchParams.get('city')
   const [value, setValue] = useState<string | undefined>(undefined)
   const [cities, setCities] = useState<City[]>([])
   const [loading, setLoading] = useState(true)
 
   const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
+  const from = searchParams.get('from')
+  const to = searchParams.get('to')
+  const cityParam = searchParams.get('city')
+
+  const headers = useMemo(() => ({
+    'x-locale': locale,
+    ...(countyId && { 'x-county-id': countyId }),
+  }), [locale, countyId])
+
+  const citiesUrl = useMemo(() => {
+    const params = new URLSearchParams()
+    if (from) params.set('from', from)
+    if (to) params.set('to', to)
+    const queryString = params.toString()
+    return `/api/public/cities${queryString ? `?${queryString}` : ''}`
+  }, [from, to])
 
   useEffect(() => {
     async function fetchCities() {
       try {
         setLoading(true)
-        const headers: Record<string, string> = {
-          'x-locale': locale,
-        }
-
-        if (countyId) {
-          headers['x-county-id'] = countyId
-        }
-
-        const from = searchParams.get('from')
-        const to = searchParams.get('to')
-        const params = new URLSearchParams()
-        if (from) {
-          params.set('from', from)
-        }
-        if (to) {
-          params.set('to', to)
-        }
-
-        const queryString = params.toString()
-        const url = `/api/public/cities${queryString ? `?${queryString}` : ''}`
-
-        const response = await fetch(url, {
-          headers,
-        })
+        const response = await fetch(citiesUrl, { headers })
 
         if (!response.ok) {
           throw new Error('Failed to fetch cities')
@@ -63,36 +55,29 @@ function CityFilterContent({ locale }: { locale: string }) {
     }
 
     fetchCities()
-  }, [locale, countyId, searchParams.get('from'), searchParams.get('to')])
+  }, [citiesUrl, headers])
 
   useEffect(() => {
-    if (loading) return
-    
-    const cityParam = searchParams.get('city')
-    
-    if (!cityParam || cities.length === 0) {
+    if (loading || cities.length === 0) {
       setValue(undefined)
       return
     }
-    
-    const cityExists = cities.some(city => String(city.id) === String(cityParam))
-    if (cityExists) {
-      setValue(prevValue => {
-        const currentValueStr = prevValue ? String(prevValue) : null
-        const paramStr = String(cityParam)
-        return currentValueStr !== paramStr ? String(cityParam) : prevValue
-      })
-    } else {
+
+    if (!cityParam) {
       setValue(undefined)
+      return
     }
-  }, [searchParams, cities, loading])
+
+    const cityExists = cities.some(city => String(city.id) === cityParam)
+    setValue(cityExists ? cityParam : undefined)
+  }, [cityParam, cities, loading])
 
   const handleChange = (cityId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (cityId) {
-      params.set('city', String(cityId))
-      setValue(String(cityId))
+      params.set('city', cityId)
+      setValue(cityId)
     } else {
       params.delete('city')
       setValue(undefined)
@@ -102,20 +87,25 @@ function CityFilterContent({ locale }: { locale: string }) {
     router.refresh()
   }
 
-  const getCityName = (city: City): string => {
-    if (typeof city.name === 'string') {
-      return city.name
+  const options = useMemo(() => {
+    const getCityName = (city: City): string => {
+      if (typeof city.name === 'string') {
+        return city.name
+      }
+      return city.name[locale as 'pl' | 'en'] || city.name.pl || city.name.en || ''
     }
-    return city.name[locale as 'pl' | 'en'] || city.name.pl || city.name.en || ''
-  }
+
+    return cities.map((city) => ({
+      label: getCityName(city),
+      value: String(city.id),
+    }))
+  }, [cities, locale])
 
   const filterOption = (input: string, option?: { label: string; value: string }) => {
-    if (!option) return false
-    return option.label.toLowerCase().includes(input.toLowerCase())
+    return option?.label.toLowerCase().includes(input.toLowerCase()) ?? false
   }
 
-  const selectedCity = value ? cities.find(city => String(city.id) === String(value)) : null
-  const displayValue = (!loading && selectedCity && value) ? String(value) : null
+  const displayValue = !loading && value && cities.some(city => String(city.id) === value) ? value : null
 
   return (
     <Select
@@ -127,10 +117,7 @@ function CityFilterContent({ locale }: { locale: string }) {
       loading={loading}
       filterOption={filterOption}
       style={{ width: '100%' }}
-      options={cities.map((city) => ({
-        label: getCityName(city),
-        value: String(city.id),
-      }))}
+      options={options}
       notFoundContent={loading ? null : undefined}
     />
   )
