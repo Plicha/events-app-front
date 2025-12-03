@@ -42,7 +42,8 @@
     "viewAllEvents": "Zobacz wszystkie wydarzenia",
     "free": "Bezpłatne",
     "promoted": "Promowane",
-    "noImage": "Brak obrazu"
+    "noImage": "Brak obrazu",
+    "source": "Źródło"
   },
   "about": {
     "title": "O nas",
