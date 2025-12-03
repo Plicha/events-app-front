@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
-import { BackendError, NetworkError } from '@/lib/api/errors'
+import { BackendError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
 import { Empty, Row, Col } from 'antd'
@@ -12,6 +12,23 @@ import { PageSizeSelector } from '@/components/features/events/EventFilters/Page
 import { Suspense } from 'react'
 
 export const revalidate = 300
+
+type EventsPageSearchParams = {
+  search?: string
+  from?: string
+  to?: string
+  city?: string
+  category?: string
+  page?: string
+  limit?: string
+}
+
+function getEventTitle(event: Event, locale: string): string {
+  if (typeof event.title === 'string') {
+    return event.title
+  }
+  return event.title[locale as 'pl' | 'en'] || event.title.pl || ''
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({
@@ -24,7 +41,7 @@ export default async function EventsPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string; category?: string; page?: string; limit?: string }>
+  searchParams: Promise<EventsPageSearchParams>
 }) {
   const { locale } = await params
   const { search, from, to, city, category, page, limit } = await searchParams
@@ -57,13 +74,10 @@ export default async function EventsPage({
 
   try {
     const apiClient = new ApiClient(apiBaseUrl)
+    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
     const headers: Record<string, string> = {
       'x-locale': locale,
-    }
-
-    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
-    if (countyId) {
-      headers['x-county-id'] = countyId
+      ...(countyId && { 'x-county-id': countyId }),
     }
 
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
@@ -104,9 +118,7 @@ export default async function EventsPage({
           <>
           <br />
             <pre>{events.map(event => {
-              const title = typeof event.title === 'string' 
-                ? event.title 
-                : event.title[locale as 'pl' | 'en'] || event.title.pl || ''
+              const title = getEventTitle(event, locale)
               return <div key={event.id}> {event.id}. {title} - {event.startsAt}</div>
             })}</pre>
             {paginationData && (
