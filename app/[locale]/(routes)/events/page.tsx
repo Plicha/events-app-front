@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
-import { BackendError, NetworkError } from '@/lib/api/errors'
+import { BackendError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
 import { Empty, Row, Col } from 'antd'
@@ -12,6 +12,23 @@ import { PageSizeSelector } from '@/components/features/events/EventFilters/Page
 import { Suspense } from 'react'
 
 export const revalidate = 300
+
+type EventsPageSearchParams = {
+  search?: string
+  from?: string
+  to?: string
+  city?: string
+  category?: string
+  page?: string
+  limit?: string
+}
+
+function getEventTitle(event: Event, locale: string): string {
+  if (typeof event.title === 'string') {
+    return event.title
+  }
+  return event.title[locale as 'pl' | 'en'] || event.title.pl || ''
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({
@@ -24,7 +41,7 @@ export default async function EventsPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ search?: string; from?: string; to?: string; city?: string; category?: string; page?: string; limit?: string }>
+  searchParams: Promise<EventsPageSearchParams>
 }) {
   const { locale } = await params
   const { search, from, to, city, category, page, limit } = await searchParams
@@ -33,70 +50,40 @@ export default async function EventsPage({
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
 
   const apiParams: Record<string, string> = {
-    locale: locale
+    locale: locale,
+    from: from || getTodayDateString(),
   }
 
-  if (from) {
-    apiParams.from = from
-  } else {
-    apiParams.from = getTodayDateString()
+  const optionalParams: Record<string, string | undefined> = {
+    to,
+    search,
+    city,
+    category,
+    page,
+    limit,
   }
 
-  if (to) {
-    apiParams.to = to
-  }
-
-  if (search) {
-    apiParams.search = search
-  }
-
-  if (city) {
-    apiParams.city = city
-  }
-
-  if (category) {
-    apiParams.category = category
-  }
-
-  if (page) {
-    apiParams.page = page
-  }
-
-  if (limit) {
-    apiParams.limit = limit
-  }
+  Object.entries(optionalParams).forEach(([key, value]) => {
+    if (value) {
+      apiParams[key] = value
+    }
+  })
 
   let events: Event[] = []
   let paginationData: { current: number; total: number; pageSize: number } | null = null
 
   try {
     const apiClient = new ApiClient(apiBaseUrl)
+    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
     const headers: Record<string, string> = {
       'x-locale': locale,
-    }
-
-    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
-    if (countyId) {
-      headers['x-county-id'] = countyId
+      ...(countyId && { 'x-county-id': countyId }),
     }
 
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
       params: apiParams,
       headers,
     })
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Frontend] API Response:', {
-        docsCount: response.docs?.length || 0,
-        totalDocs: response.totalDocs,
-        page: response.page,
-        totalPages: response.totalPages,
-        limit: response.limit,
-        hasNextPage: response.hasNextPage,
-        hasPrevPage: response.hasPrevPage,
-        responseKeys: Object.keys(response),
-      })
-    }
     
     events = Array.isArray(response.docs) ? response.docs : []
     
@@ -106,12 +93,6 @@ export default async function EventsPage({
         total: response.totalDocs,
         pageSize: response.limit,
       }
-    } else if (process.env.NODE_ENV === 'development') {
-      console.warn('[Frontend] Pagination data missing:', {
-        totalDocs: response.totalDocs,
-        page: response.page,
-        limit: response.limit,
-      })
     }
   } catch (error) {
     if (error instanceof BackendError && error.statusCode === 404) {
@@ -137,9 +118,7 @@ export default async function EventsPage({
           <>
           <br />
             <pre>{events.map(event => {
-              const title = typeof event.title === 'string' 
-                ? event.title 
-                : event.title[locale as 'pl' | 'en'] || event.title.pl || ''
+              const title = getEventTitle(event, locale)
               return <div key={event.id}> {event.id}. {title} - {event.startsAt}</div>
             })}</pre>
             {paginationData && (
