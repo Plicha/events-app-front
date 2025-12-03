@@ -35,7 +35,11 @@
     "categoryFilterLabel": "Category",
     "sortAsc": "Date: earliest first",
     "sortDesc": "Date: latest first",
-    "sortPlaceholder": "Sort by"
+    "sortPlaceholder": "Sort by",
+    "viewDetails": "View details",
+    "free": "Free",
+    "promoted": "Promoted",
+    "noImage": "No image"
   },
   "about": {
     "title": "About",
