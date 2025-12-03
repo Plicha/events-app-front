@@ -32,7 +32,10 @@
     "cityPlaceholder": "Wybierz miejscowość",
     "cityFilterLabel": "Miejscowość",
     "categoryPlaceholder": "Wybierz kategorię",
-    "categoryFilterLabel": "Kategoria"
+    "categoryFilterLabel": "Kategoria",
+    "sortAsc": "Data: najwcześniejsze",
+    "sortDesc": "Data: najpóźniejsze",
+    "sortPlaceholder": "Sortuj"
   },
   "about": {
     "title": "O nas",
