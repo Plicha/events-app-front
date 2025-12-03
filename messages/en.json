@@ -5,7 +5,9 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "back": "Back",
-    "home": "Home"
+    "home": "Home",
+    "inDevelopment": "This page is currently under development",
+    "inDevelopmentDescription": "We are working on this functionality. In the meantime, check out available events!"
   },
   "nav": {
     "events": "Events",

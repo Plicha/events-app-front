@@ -5,7 +5,9 @@
     "loading": "Ładowanie...",
     "error": "Wystąpił błąd",
     "back": "Wstecz",
-    "home": "Strona główna"
+    "home": "Strona główna",
+    "inDevelopment": "Ta strona jest obecnie w rozwoju",
+    "inDevelopmentDescription": "Pracujemy nad tą funkcjonalnością. Tymczasem sprawdź dostępne wydarzenia!"
   },
   "nav": {
     "events": "Wydarzenia",
