@@ -31,7 +31,20 @@ function CityFilterContent({ locale }: { locale: string }) {
           headers['x-county-id'] = countyId
         }
 
-        const response = await fetch('/api/public/cities', {
+        const from = searchParams.get('from')
+        const to = searchParams.get('to')
+        const params = new URLSearchParams()
+        if (from) {
+          params.set('from', from)
+        }
+        if (to) {
+          params.set('to', to)
+        }
+
+        const queryString = params.toString()
+        const url = `/api/public/cities${queryString ? `?${queryString}` : ''}`
+
+        const response = await fetch(url, {
           headers,
         })
 
@@ -50,7 +63,7 @@ function CityFilterContent({ locale }: { locale: string }) {
     }
 
     fetchCities()
-  }, [locale, countyId])
+  }, [locale, countyId, searchParams.get('from'), searchParams.get('to')])
 
   useEffect(() => {
     if (loading) return

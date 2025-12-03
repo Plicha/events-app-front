@@ -111,11 +111,22 @@ function DateRangeFilterContent({ locale }: { locale: string }) {
       const fromDate = dates[0].startOf('day')
       const toDate = dates[1].startOf('day')
       
+      const previousFrom = params.get('from')
+      const previousTo = params.get('to')
+      
       params.set('from', fromDate.format('YYYY-MM-DD'))
       params.set('to', toDate.format('YYYY-MM-DD'))
+      
+      const newFrom = params.get('from')
+      const newTo = params.get('to')
+      
+      if (previousFrom !== newFrom || previousTo !== newTo) {
+        params.delete('city')
+      }
     } else {
       params.delete('from')
       params.delete('to')
+      params.delete('city')
     }
     
     router.push(`${pathname}?${params.toString()}`)
