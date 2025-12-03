@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.2.0",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@types/lodash.debounce": "^4.0.9",
     "antd": "^5.29.1",
     "dayjs": "^1.11.19",

@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
