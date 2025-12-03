@@ -21,7 +21,25 @@
     "date": "Data",
     "location": "Lokalizacja",
     "category": "Kategoria",
-    "searchPlaceholder": "Szukaj wydarzeń..."
+    "searchPlaceholder": "Szukaj wydarzeń...",
+    "dateRangePresets": {
+      "today": "Dziś",
+      "tomorrow": "Jutro",
+      "thisWeekend": "Ten weekend",
+      "next7Days": "Najbliższe 7 dni",
+      "next30Days": "Najbliższe 30 dni"
+    },
+    "cityPlaceholder": "Wybierz miejscowość",
+    "cityFilterLabel": "Miejscowość",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "categoryFilterLabel": "Kategoria",
+    "sortAsc": "Data: najwcześniejsze",
+    "sortDesc": "Data: najpóźniejsze",
+    "sortPlaceholder": "Sortuj",
+    "viewDetails": "Zobacz więcej",
+    "free": "Bezpłatne",
+    "promoted": "Promowane",
+    "noImage": "Brak obrazu"
   },
   "about": {
     "title": "O nas",

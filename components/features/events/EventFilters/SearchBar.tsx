@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { useState, useMemo, useEffect, Suspense } from 'react'
 import { Input, Space, Button } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
@@ -15,6 +16,7 @@ function SearchBarContent() {
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
 
   const updateSearchInParams = (params: URLSearchParams, value: string) => {
+    params.delete('page')
     value.trim() ? 
       params.set('search', value.trim()) :
       params.delete('search')

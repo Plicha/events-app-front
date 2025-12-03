@@ -1,0 +1,32 @@
+.dateRangeFilter {
+  width: 100%;
+}
+
+.dateRangeFilterDropdown {
+  @media (max-width: $breakpoint-sm) {
+    :global(.ant-picker-panel-container.ant-picker-date-panel-container) {
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    :global(.ant-picker-panel-layout) {
+      flex-direction: column-reverse;
+    }
+    :global(.ant-picker-panel-container .ant-picker-presets){
+      max-width: unset !important;
+      border-top: 1px solid rgba(5,5,5,0.06);
+    }
+
+    :global(.ant-picker-panel-container .ant-picker-presets ul){
+      height: 100% !important;
+      border-inline-end: none !important;
+    }
+    :global(.ant-picker-panels) {
+      flex-direction: column;
+      
+      :global(.ant-picker-panel) {
+        width: 100% !important;
+      }
+    }
+  }
+}
+

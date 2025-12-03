@@ -21,7 +21,25 @@
     "date": "Date",
     "location": "Location",
     "category": "Category",
-    "searchPlaceholder": "Search events..."
+    "searchPlaceholder": "Search events...",
+    "dateRangePresets": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "thisWeekend": "This weekend",
+      "next7Days": "Next 7 days",
+      "next30Days": "Next 30 days"
+    },
+    "cityPlaceholder": "Select location",
+    "cityFilterLabel": "Location",
+    "categoryPlaceholder": "Select category",
+    "categoryFilterLabel": "Category",
+    "sortAsc": "Date: earliest first",
+    "sortDesc": "Date: latest first",
+    "sortPlaceholder": "Sort by",
+    "viewDetails": "View details",
+    "free": "Free",
+    "promoted": "Promoted",
+    "noImage": "No image"
   },
   "about": {
     "title": "About",
