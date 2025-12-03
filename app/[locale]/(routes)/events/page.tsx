@@ -85,19 +85,6 @@ export default async function EventsPage({
       headers,
     })
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Frontend] API Response:', {
-        docsCount: response.docs?.length || 0,
-        totalDocs: response.totalDocs,
-        page: response.page,
-        totalPages: response.totalPages,
-        limit: response.limit,
-        hasNextPage: response.hasNextPage,
-        hasPrevPage: response.hasPrevPage,
-        responseKeys: Object.keys(response),
-      })
-    }
-    
     events = Array.isArray(response.docs) ? response.docs : []
     
     if (response.totalDocs !== undefined && response.page !== undefined && response.limit !== undefined) {
@@ -106,12 +93,6 @@ export default async function EventsPage({
         total: response.totalDocs,
         pageSize: response.limit,
       }
-    } else if (process.env.NODE_ENV === 'development') {
-      console.warn('[Frontend] Pagination data missing:', {
-        totalDocs: response.totalDocs,
-        page: response.page,
-        limit: response.limit,
-      })
     }
   } catch (error) {
     if (error instanceof BackendError && error.statusCode === 404) {
