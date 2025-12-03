@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { Pagination } from 'antd'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'

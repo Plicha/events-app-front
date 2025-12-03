@@ -35,7 +35,11 @@
     "categoryFilterLabel": "Kategoria",
     "sortAsc": "Data: najwcześniejsze",
     "sortDesc": "Data: najpóźniejsze",
-    "sortPlaceholder": "Sortuj"
+    "sortPlaceholder": "Sortuj",
+    "viewDetails": "Zobacz więcej",
+    "free": "Bezpłatne",
+    "promoted": "Promowane",
+    "noImage": "Brak obrazu"
   },
   "about": {
     "title": "O nas",

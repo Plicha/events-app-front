@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { Select } from 'antd'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
