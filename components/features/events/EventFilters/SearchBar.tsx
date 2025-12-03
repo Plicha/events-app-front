@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { useState, useMemo, useEffect, Suspense } from 'react'
 import { Input, Space, Button } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'

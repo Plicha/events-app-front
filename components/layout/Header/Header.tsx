@@ -1,3 +1,4 @@
+import '@/lib/antd-patch'
 import { getTranslations } from 'next-intl/server'
 import { headers } from 'next/headers'
 import { Menu } from 'antd'

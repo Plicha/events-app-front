@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { Card, Badge, Typography, Button, Row, Col, Image, Space } from 'antd'
 import { CalendarOutlined, EnvironmentOutlined, TagOutlined } from '@ant-design/icons'
 import Link from 'next/link'

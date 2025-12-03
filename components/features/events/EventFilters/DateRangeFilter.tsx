@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { useState, useEffect, Suspense } from 'react'
 import { DatePicker } from 'antd'
 import type { Dayjs } from 'dayjs'

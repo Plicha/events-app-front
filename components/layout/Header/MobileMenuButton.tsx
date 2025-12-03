@@ -1,5 +1,6 @@
 'use client'
 
+import '@/lib/antd-patch'
 import { Popover, Button } from 'antd'
 import type { MenuProps } from 'antd'
 import { MenuOutlined } from '@ant-design/icons'
