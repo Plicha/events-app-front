@@ -33,38 +33,24 @@ export default async function EventsPage({
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
 
   const apiParams: Record<string, string> = {
-    locale: locale
+    locale: locale,
+    from: from || getTodayDateString(),
   }
 
-  if (from) {
-    apiParams.from = from
-  } else {
-    apiParams.from = getTodayDateString()
+  const optionalParams: Record<string, string | undefined> = {
+    to,
+    search,
+    city,
+    category,
+    page,
+    limit,
   }
 
-  if (to) {
-    apiParams.to = to
-  }
-
-  if (search) {
-    apiParams.search = search
-  }
-
-  if (city) {
-    apiParams.city = city
-  }
-
-  if (category) {
-    apiParams.category = category
-  }
-
-  if (page) {
-    apiParams.page = page
-  }
-
-  if (limit) {
-    apiParams.limit = limit
-  }
+  Object.entries(optionalParams).forEach(([key, value]) => {
+    if (value) {
+      apiParams[key] = value
+    }
+  })
 
   let events: Event[] = []
   let paginationData: { current: number; total: number; pageSize: number } | null = null
