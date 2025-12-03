@@ -4,10 +4,11 @@ import { ApiClient } from '@/lib/api/client'
 import { BackendError, NetworkError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
-import { Empty } from 'antd'
+import { Empty, Row, Col } from 'antd'
 import { getTodayDateString } from '@/lib/utils/date'
 import { EventFilters } from '@/components/features/events/EventFilters/EventFilters'
 import { EventsPagination } from '@/components/features/events/EventsPagination/EventsPagination'
+import { PageSizeSelector } from '@/components/features/events/EventFilters/PageSizeSelector'
 import { Suspense } from 'react'
 
 export const revalidate = 300
@@ -125,6 +126,11 @@ export default async function EventsPage({
         <h1>{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />
+        <Row style={{ marginTop: 16 }} justify="end" gutter={16}>
+          <Col xs={24} sm={24} md={6}>
+            <PageSizeSelector locale={locale} currentPageSize={paginationData?.pageSize || 20} />
+          </Col>
+        </Row>
         {events.length === 0 ? (
           <Empty description={t('noEvents')} />
         ) : (

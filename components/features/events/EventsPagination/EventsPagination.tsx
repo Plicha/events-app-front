@@ -17,22 +17,9 @@ export function EventsPagination({ current, total, pageSize, locale }: EventsPag
   const searchParams = useSearchParams()
   const t = useTranslations('events')
 
-  const handlePageChange = (page: number, size: number) => {
+  const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
-    
     params.set('page', String(page))
-    params.set('limit', String(size))
-    
-    router.push(`${pathname}?${params.toString()}`)
-    router.refresh()
-  }
-
-  const handleSizeChange = (_current: number, size: number) => {
-    const params = new URLSearchParams(searchParams.toString())
-    
-    params.set('page', '1')
-    params.set('limit', String(size))
-    
     router.push(`${pathname}?${params.toString()}`)
     router.refresh()
   }
@@ -47,14 +34,13 @@ export function EventsPagination({ current, total, pageSize, locale }: EventsPag
 
   return (
     <Pagination
+      align="center"
       current={current}
       total={total}
       pageSize={pageSize}
-      showSizeChanger
-      pageSizeOptions={['10', '20', '50']}
+      showSizeChanger={false}
       showTotal={showTotal}
       onChange={handlePageChange}
-      onShowSizeChange={handleSizeChange}
     />
   )
 }
