@@ -110,13 +110,13 @@ export default async function EventsPage({
         <h1>{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />
-        <Row style={{ marginTop: 16 }} justify="end" gutter={16}>
-          <Col xs={24} sm={24} md={6}>
-            <SortSelector locale={locale} currentSort={sort || 'asc'} />
-          </Col>
-          <Col xs={24} sm={24} md={6}>
+        <Row style={{ marginTop: 16 }} justify="space-between" gutter={16}>
+          <Col xs={24} sm={24} md={4}>
             <PageSizeSelector locale={locale} currentPageSize={paginationData?.pageSize || 20} />
           </Col>
+          <Col xs={24} sm={24} md={4}>
+            <SortSelector locale={locale} currentSort={sort || 'asc'} />
+            </Col>
         </Row>
         {events.length === 0 ? (
           <Empty description={t('noEvents')} />
