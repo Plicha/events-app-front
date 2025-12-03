@@ -10,6 +10,7 @@ import { EventFilters } from '@/components/features/events/EventFilters/EventFil
 import { EventsPagination } from '@/components/features/events/EventsPagination/EventsPagination'
 import { PageSizeSelector } from '@/components/features/events/EventFilters/PageSizeSelector'
 import { SortSelector } from '@/components/features/events/EventFilters/SortSelector'
+import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Suspense } from 'react'
 
 export const revalidate = 300
@@ -23,13 +24,6 @@ type EventsPageSearchParams = {
   page?: string
   limit?: string
   sort?: string
-}
-
-function getEventTitle(event: Event, locale: string): string {
-  if (typeof event.title === 'string') {
-    return event.title
-  }
-  return event.title[locale as 'pl' | 'en'] || event.title.pl || ''
 }
 
 export function generateStaticParams() {
@@ -118,27 +112,18 @@ export default async function EventsPage({
             <SortSelector locale={locale} currentSort={sort || 'asc'} />
             </Col>
         </Row>
-        {events.length === 0 ? (
-          <Empty description={t('noEvents')} />
-        ) : (
-          <>
-          <br />
-            <pre>{events.map(event => {
-              const title = getEventTitle(event, locale)
-              return <div key={event.id}> {event.id}. {title} - {event.startsAt}</div>
-            })}</pre>
-            {paginationData && (
-              <Suspense fallback={null}>
-                <br />
-                <EventsPagination
-                  current={paginationData.current}
-                  total={paginationData.total}
-                  pageSize={paginationData.pageSize}
-                  locale={locale}
-                />
-              </Suspense>
-            )}
-          </>
+        <br />
+        <EventsList events={events} locale={locale} />
+        {paginationData && events.length > 0 && (
+          <Suspense fallback={null}>
+            <br />
+            <EventsPagination
+              current={paginationData.current}
+              total={paginationData.total}
+              pageSize={paginationData.pageSize}
+              locale={locale}
+            />
+          </Suspense>
         )}
       </div>
     </main>
