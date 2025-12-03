@@ -75,6 +75,7 @@ function CityFilterContent({ locale }: { locale: string }) {
 
   const handleChange = (cityId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
+    params.delete('page')
 
     if (cityId) {
       params.set('city', cityId)

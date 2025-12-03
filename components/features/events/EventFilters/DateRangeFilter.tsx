@@ -107,6 +107,7 @@ function DateRangeFilterContent({ locale }: { locale: string }) {
     setValue(dates)
     
     const params = new URLSearchParams(searchParams.toString())
+    params.delete('page')
     
     if (dates && dates[0] && dates[1]) {
       const fromDate = dates[0].startOf('day')

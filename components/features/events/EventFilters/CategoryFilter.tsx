@@ -75,6 +75,7 @@ function CategoryFilterContent({ locale }: { locale: string }) {
 
   const handleChange = (categoryId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
+    params.delete('page')
 
     if (categoryId) {
       params.set('category', String(categoryId))
