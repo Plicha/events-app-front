@@ -28,7 +28,11 @@
       "thisWeekend": "Ten weekend",
       "next7Days": "Najbliższe 7 dni",
       "next30Days": "Najbliższe 30 dni"
-    }
+    },
+    "cityPlaceholder": "Wybierz miejscowość",
+    "cityFilterLabel": "Miejscowość",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "categoryFilterLabel": "Kategoria"
   },
   "about": {
     "title": "O nas",
