@@ -9,6 +9,7 @@ import { getTodayDateString } from '@/lib/utils/date'
 import { EventFilters } from '@/components/features/events/EventFilters/EventFilters'
 import { EventsPagination } from '@/components/features/events/EventsPagination/EventsPagination'
 import { PageSizeSelector } from '@/components/features/events/EventFilters/PageSizeSelector'
+import { SortSelector } from '@/components/features/events/EventFilters/SortSelector'
 import { Suspense } from 'react'
 
 export const revalidate = 300
@@ -21,6 +22,7 @@ type EventsPageSearchParams = {
   category?: string
   page?: string
   limit?: string
+  sort?: string
 }
 
 function getEventTitle(event: Event, locale: string): string {
@@ -44,7 +46,7 @@ export default async function EventsPage({
   searchParams: Promise<EventsPageSearchParams>
 }) {
   const { locale } = await params
-  const { search, from, to, city, category, page, limit } = await searchParams
+  const { search, from, to, city, category, page, limit, sort } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
@@ -61,6 +63,7 @@ export default async function EventsPage({
     category,
     page,
     limit,
+    sort,
   }
 
   Object.entries(optionalParams).forEach(([key, value]) => {
@@ -108,6 +111,9 @@ export default async function EventsPage({
         <br />
         <EventFilters locale={locale} />
         <Row style={{ marginTop: 16 }} justify="end" gutter={16}>
+          <Col xs={24} sm={24} md={6}>
+            <SortSelector locale={locale} currentSort={sort || 'asc'} />
+          </Col>
           <Col xs={24} sm={24} md={6}>
             <PageSizeSelector locale={locale} currentPageSize={paginationData?.pageSize || 20} />
           </Col>

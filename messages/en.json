@@ -32,7 +32,10 @@
     "cityPlaceholder": "Select location",
     "cityFilterLabel": "Location",
     "categoryPlaceholder": "Select category",
-    "categoryFilterLabel": "Category"
+    "categoryFilterLabel": "Category",
+    "sortAsc": "Date: earliest first",
+    "sortDesc": "Date: latest first",
+    "sortPlaceholder": "Sort by"
   },
   "about": {
     "title": "About",
