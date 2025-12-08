@@ -5,6 +5,7 @@ import path from 'path'
 const withNextIntl = createNextIntlPlugin('./lib/i18n/config.ts')
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ['antd'],
