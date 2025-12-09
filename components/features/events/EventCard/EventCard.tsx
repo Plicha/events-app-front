@@ -8,9 +8,14 @@ import { useTranslations } from 'next-intl'
 import type { Event, Category } from '@/types'
 import { extractTextFromRichText, truncateText, getLocalizedText } from '@/lib/utils/richText'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import 'dayjs/locale/pl'
 import 'dayjs/locale/en'
 import styles from './EventCard.module.scss'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const { Title, Text } = Typography
 
@@ -20,10 +25,12 @@ interface EventCardProps {
 }
 
 function formatEventDate(dateString: string, locale: string): string {
-  const date = dayjs(dateString)
+  const date = dayjs.utc(dateString)
   dayjs.locale(locale === 'pl' ? 'pl' : 'en')
   
-  return date.format('DD.MM.YYYY, HH:mm')
+  const localDate = date.tz('Europe/Warsaw')
+  
+  return localDate.format('DD.MM.YYYY, HH:mm')
 }
 
 function buildMediaUrl(urlOrPath: string): string {
