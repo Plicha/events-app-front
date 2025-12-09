@@ -12,6 +12,8 @@
 !eslint.config.mjs
 !.eslintignore
 !.env.example
+!Dockerfile
+!Dockerfile.dev
 
 # Include app directory
 !app/
