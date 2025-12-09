@@ -33,7 +33,12 @@ export default async function EventDetailsPage({
   const { slug, locale } = await params
   const t = await getTranslations({ locale, namespace: 'events' })
   
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+  // Use environment variable or fallback to backend service name (for Docker)
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[EventDetailsPage] Using API URL: ${apiBaseUrl}`)
+  }
 
   let event: Event | null = null
 

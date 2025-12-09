@@ -28,14 +28,25 @@ export class ApiClient {
     }
 
     try {
-      const response = await fetch(url.toString(), {
+      const fullUrl = url.toString()
+      
+      // Log request details in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[ApiClient] Fetching: ${fullUrl}`)
+      }
+
+      const response = await fetch(fullUrl, {
         method: 'GET',
         headers,
       })
 
       if (!response.ok) {
+        const errorMessage = `Backend error: ${response.status} ${response.statusText} (${fullUrl})`
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`[ApiClient] ${errorMessage}`)
+        }
         throw new BackendError(
-          `Backend error: ${response.statusText}`,
+          errorMessage,
           response.status
         )
       }
@@ -46,9 +57,15 @@ export class ApiClient {
         throw error
       }
 
-      throw new NetworkError(
-        error instanceof Error ? error.message : 'Unknown network error'
-      )
+      const errorMessage = error instanceof Error 
+        ? `${error.message} (URL: ${url.toString()})`
+        : `Unknown network error (URL: ${url.toString()})`
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`[ApiClient] Network error:`, errorMessage, error)
+      }
+
+      throw new NetworkError(errorMessage)
     }
   }
 }

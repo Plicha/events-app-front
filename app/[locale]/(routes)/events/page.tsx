@@ -43,7 +43,12 @@ export default async function EventsPage({
   const { search, from, to, city, category, page, limit, sort } = await searchParams
   const t = await getTranslations({ locale, namespace: 'events' })
   
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+  // Use environment variable or fallback to backend service name (for Docker)
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[EventsPage] Using API URL: ${apiBaseUrl}`)
+  }
 
   const apiParams: Record<string, string> = {
     locale: locale,
@@ -95,7 +100,9 @@ export default async function EventsPage({
     if (error instanceof BackendError && error.statusCode === 404) {
       notFound()
     }
-    throw error
+    // Log error but don't crash the page - show empty list instead
+    console.error('Failed to fetch events:', error)
+    // Continue with empty events array
   }
 
   return (

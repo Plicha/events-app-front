@@ -191,7 +191,7 @@ export function EventCard({ event, locale }: EventCardProps) {
               </Title>
               
               <Space direction="vertical" size={4}>
-                <Text>
+                <Text suppressHydrationWarning>
                   <CalendarOutlined /> {formattedDate}
                 </Text>
                 

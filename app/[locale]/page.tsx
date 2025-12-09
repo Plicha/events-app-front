@@ -26,7 +26,12 @@ export default async function Home({
   const tCommon = await getTranslations({ locale, namespace: 'common' })
   const tEvents = await getTranslations({ locale, namespace: 'events' })
   
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+  // Use environment variable or fallback to backend service name (for Docker)
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Home] Using API URL: ${apiBaseUrl}`)
+  }
 
   let events: Event[] = []
 
