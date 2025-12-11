@@ -6,6 +6,10 @@ import timezone from 'dayjs/plugin/timezone'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || ''
+const BACKEND_API_URL = process.env.BACKEND_API_URL || ''
+const BACKEND_URL = NEXT_PUBLIC_BACKEND_URL || (BACKEND_API_URL.endsWith('/api') ? BACKEND_API_URL.slice(0, -4) : BACKEND_API_URL) || 'http://localhost:3000'
+
 export function formatEventDate(dateString: string, locale: string): string {
   const date = dayjs.utc(dateString)
   dayjs.locale(locale === 'pl' ? 'pl' : 'en')
@@ -20,8 +24,7 @@ export function buildMediaUrl(urlOrPath: string): string {
     return urlOrPath
   }
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_API_URL?.replace('/api', '') || 'http://localhost:3000'
-  const backendBaseUrl = backendUrl.replace(/\/+$/, '')
+  const backendBaseUrl = BACKEND_URL.replace(/\/+$/, '')
   const normalizedPath = urlOrPath.startsWith('/') ? urlOrPath : `/${urlOrPath}`
 
   return `${backendBaseUrl}${normalizedPath}`
@@ -131,4 +134,3 @@ export function getVenueName(venue: Event['venue'], locale: string): string {
   const localizedName = venue.name[locale as 'pl' | 'en'] || venue.name.pl || venue.name.en
   return localizedName || ''
 }
-
