@@ -16,6 +16,16 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG NEXT_PUBLIC_BACKEND_URL=http://backend:3000
+ARG NEXT_PUBLIC_API_URL=http://backend:3000/api
+ARG BACKEND_API_URL=http://backend:3000/api
+ARG NEXT_PUBLIC_COUNTY_ID
+
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV BACKEND_API_URL=${BACKEND_API_URL}
+ENV NEXT_PUBLIC_COUNTY_ID=${NEXT_PUBLIC_COUNTY_ID}
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
