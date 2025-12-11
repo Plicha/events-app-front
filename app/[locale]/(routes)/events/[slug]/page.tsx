@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
@@ -90,6 +90,7 @@ export default async function EventDetailsPage({
   params: Promise<{ slug: string; locale: string }>
 }) {
   const { slug, locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: 'events' })
 
   const event = await fetchEvent(slug, locale)
