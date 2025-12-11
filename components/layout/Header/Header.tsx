@@ -11,7 +11,7 @@ interface HeaderProps {
 }
 
 export async function Header({ locale }: HeaderProps) {
-  const messages = (await import(`../../messages/${locale}.json`)).default
+  const messages = (await import(`../../../messages/${locale}.json`)).default
   const t = createTranslator({ locale, messages, namespace: 'nav' })
 
   const menuItems: MenuProps['items'] = [
