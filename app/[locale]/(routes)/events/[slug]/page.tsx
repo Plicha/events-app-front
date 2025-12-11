@@ -15,8 +15,12 @@ import {
   getCategoriesText,
 } from '@/lib/utils/eventHelpers'
 import { getLocalizedText } from '@/lib/utils/richText'
-import { RichText } from '@/components/ui/RichText'
+import dynamic from 'next/dynamic'
 import styles from './page.module.scss'
+
+const RichText = dynamic(() => import('@/components/ui/RichText').then(mod => ({ default: mod.RichText })), {
+  ssr: true,
+})
 
 export const revalidate = 300
 
@@ -34,7 +38,6 @@ export default async function EventDetailsPage({
   const { slug, locale } = await params
   const t = await getTranslations({ locale, namespace: 'events' })
   
-  // Use environment variable or fallback to backend service name (for Docker)
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
   
   if (process.env.NODE_ENV === 'development') {
