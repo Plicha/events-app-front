@@ -163,7 +163,7 @@ export function EventCard({ event, locale }: EventCardProps) {
   dayjs.locale(locale === 'pl' ? 'pl' : 'en')
   
   const title = getLocalizedText(event.title, locale)
-  const summaryText = extractTextFromRichText(event.summaryAI)
+  const summaryText = extractTextFromRichText(event.summaryAI || event.summaryRaw, locale)
   const truncatedSummary = truncateText(summaryText, 150)
   const formattedDate = formatEventDate(event.startsAt, locale)
   const cityName = getCityName(event.city, locale)
