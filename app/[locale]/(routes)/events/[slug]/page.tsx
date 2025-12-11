@@ -15,12 +15,8 @@ import {
   getCategoriesText,
 } from '@/lib/utils/eventHelpers'
 import { getLocalizedText } from '@/lib/utils/richText'
-import dynamicImport from 'next/dynamic'
+import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
-
-const RichText = dynamicImport(() => import('@/components/ui/RichText').then(mod => ({ default: mod.RichText })), {
-  ssr: true,
-})
 
 export const revalidate = 300
 
