@@ -16,7 +16,7 @@ import {
   getCategoriesText,
 } from '@/lib/utils/eventHelpers'
 import { getLocalizedText } from '@/lib/utils/richText'
-// import { RichText } from '@/components/ui/RichText'
+import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
 
 export const revalidate = 300
@@ -137,17 +137,14 @@ export default async function EventDetailsPage({
           <Col xs={24} md={18}>
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
               <h1>{title}</h1>
-              <pre>
-                {JSON.stringify(event.summaryAI || event.summaryRaw, null, 2)}
-              </pre>
-              {/* {(event.summaryAI || event.summaryRaw) && (
+              {(event.summaryAI || event.summaryRaw) && (
                 <RichText 
                   content={event.summaryAI || event.summaryRaw} 
                   locale={locale}
                   className={styles.eventSummary}
                 />
               )}
-               */}
+              
               <Space direction="vertical" size="middle">
                 <div>
                   <CalendarOutlined /> {formattedDate}
