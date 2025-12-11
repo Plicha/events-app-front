@@ -12,6 +12,8 @@ export class ApiClient {
     options?: {
       params?: Record<string, string>
       headers?: Record<string, string>
+      cache?: RequestCache
+      next?: { revalidate?: number }
     }
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${endpoint}`)
@@ -30,15 +32,18 @@ export class ApiClient {
     try {
       const fullUrl = url.toString()
       
-      // Log request details in development
       if (process.env.NODE_ENV === 'development') {
         console.log(`[ApiClient] Fetching: ${fullUrl}`)
       }
 
-      const response = await fetch(fullUrl, {
+      const fetchOptions: RequestInit = {
         method: 'GET',
         headers,
-      })
+        cache: options?.cache || 'force-cache',
+        ...(options?.next && { next: options.next }),
+      }
+
+      const response = await fetch(fullUrl, fetchOptions)
 
       if (!response.ok) {
         const errorMessage = `Backend error: ${response.status} ${response.statusText} (${fullUrl})`
@@ -69,4 +74,3 @@ export class ApiClient {
     }
   }
 }
-
