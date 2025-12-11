@@ -1,7 +1,10 @@
 export function getTodayDateString(): string {
+    // Use UTC to ensure consistent date across all timezones
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    return today.toISOString().split('T')[0]
+    const year = today.getUTCFullYear()
+    const month = String(today.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(today.getUTCDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
 }
 
 export function formatDateToISOString(date: Date): string {

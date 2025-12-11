@@ -10,7 +10,10 @@ import { getTodayDateString } from '@/lib/utils/date'
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Row } from 'antd'
 
-export const revalidate = 300
+// Force dynamic rendering to ensure fresh data on every request
+// This is important for the homepage which filters events by today's date
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({
@@ -33,6 +36,7 @@ export default async function Home({
   const tEvents = createTranslator({ locale, messages, namespace: 'events' })
 
   let events: Event[] = []
+  const todayDateString = getTodayDateString()
 
   try {
     const apiClient = new ApiClient(API_BASE_URL)
@@ -41,21 +45,43 @@ export default async function Home({
       ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
     }
 
+    const apiUrl = `${API_BASE_URL}/public/events?locale=${locale}&from=${todayDateString}&limit=10&sort=asc`
+    
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`[HomePage] Fetching events from: ${apiUrl}`)
+      console.log(`[HomePage] Using date filter: from=${todayDateString}`)
+    }
+
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
       params: {
         locale: locale,
-        from: getTodayDateString(),
+        from: todayDateString,
         limit: '10',
         sort: 'asc',
       },
       headers,
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
     })
     
     events = Array.isArray(response.docs) ? response.docs.slice(0, 2) : []
+    
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`[HomePage] Fetched ${events.length} events (from ${response.docs?.length || 0} total)`)
+    }
   } catch (error) {
-    if (!(error instanceof BackendError && error.statusCode === 404)) {
-      console.error('Failed to fetch events:', error)
+    if (error instanceof BackendError && error.statusCode === 404) {
+      if (process.env.NODE_ENV === 'production') {
+        console.warn(`[HomePage] No events found (404) for date: ${todayDateString}`)
+      }
+    } else {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error(`[HomePage] Failed to fetch events:`, {
+        error: errorMessage,
+        apiUrl: API_BASE_URL,
+        date: todayDateString,
+        locale,
+        countyId: COUNTY_ID,
+      })
     }
   }
 
