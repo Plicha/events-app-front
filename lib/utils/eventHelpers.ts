@@ -1,11 +1,18 @@
 import type { Event, Category } from '@/types'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export function formatEventDate(dateString: string, locale: string): string {
-  const date = dayjs(dateString)
+  const date = dayjs.utc(dateString)
   dayjs.locale(locale === 'pl' ? 'pl' : 'en')
   
-  return date.format('DD.MM.YYYY, HH:mm')
+  const localDate = date.tz('Europe/Warsaw')
+  
+  return localDate.format('DD.MM.YYYY, HH:mm')
 }
 
 export function buildMediaUrl(urlOrPath: string): string {
