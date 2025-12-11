@@ -1,9 +1,10 @@
-import { getTranslations } from 'next-intl/server'
+import { createTranslator } from 'next-intl'
+import { setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
-import { Button, Col } from 'antd'
+import { Button } from 'antd'
 import Link from 'next/link'
 import { getTodayDateString } from '@/lib/utils/date'
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
@@ -17,30 +18,27 @@ export function generateStaticParams() {
   }))
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+const COUNTY_ID = process.env.NEXT_PUBLIC_COUNTY_ID
+
 export default async function Home({
   params
 }: {
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const tCommon = await getTranslations({ locale, namespace: 'common' })
-  const tEvents = await getTranslations({ locale, namespace: 'events' })
-  
-  // Use environment variable or fallback to backend service name (for Docker)
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-  
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[Home] Using API URL: ${apiBaseUrl}`)
-  }
+  setRequestLocale(locale)
+  const messages = (await import(`../messages/${locale}.json`)).default
+  const tCommon = createTranslator({ locale, messages, namespace: 'common' })
+  const tEvents = createTranslator({ locale, messages, namespace: 'events' })
 
   let events: Event[] = []
 
   try {
-    const apiClient = new ApiClient(apiBaseUrl)
-    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
+    const apiClient = new ApiClient(API_BASE_URL)
     const headers: Record<string, string> = {
       'x-locale': locale,
-      ...(countyId && { 'x-county-id': countyId }),
+      ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
     }
 
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
@@ -51,6 +49,7 @@ export default async function Home({
         sort: 'asc',
       },
       headers,
+      next: { revalidate: 300 },
     })
     
     events = Array.isArray(response.docs) ? response.docs.slice(0, 2) : []
