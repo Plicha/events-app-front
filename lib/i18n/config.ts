@@ -1,13 +1,13 @@
-import { getRequestConfig } from 'next-intl/server';
+import { getRequestConfig, getLocale } from 'next-intl/server';
 import { routing } from './routing';
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  let locale: string | undefined;
+export default getRequestConfig(async () => {
+  let locale: string;
   
   try {
-    locale = await requestLocale;
+    locale = await getLocale();
   } catch (error) {
-    locale = undefined;
+    locale = routing.defaultLocale;
   }
 
   if (!locale || !routing.locales.includes(locale as any)) {
