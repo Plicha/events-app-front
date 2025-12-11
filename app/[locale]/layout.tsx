@@ -1,6 +1,6 @@
 import '@/lib/antd-patch'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages, setRequestLocale } from 'next-intl/server'
+import { setRequestLocale } from 'next-intl/server'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
@@ -28,13 +28,13 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale)
-  const messages = await getMessages()
+  const messages = (await import(`../../messages/${locale}.json`)).default
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body>
         <AntdRegistry>
-          <NextIntlClientProvider messages={messages}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
             <ConfigProvider locale={locale === 'pl' ? plPL : enUS}>
               <Header locale={locale} />
               {children}

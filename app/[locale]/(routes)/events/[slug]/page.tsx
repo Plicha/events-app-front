@@ -1,4 +1,5 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { createTranslator } from 'next-intl'
+import { setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
@@ -91,7 +92,8 @@ export default async function EventDetailsPage({
 }) {
   const { slug, locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations('events')
+  const messages = (await import(`../../../../../messages/${locale}.json`)).default
+  const t = createTranslator({ locale, messages, namespace: 'events' })
 
   const event = await fetchEvent(slug, locale)
 
