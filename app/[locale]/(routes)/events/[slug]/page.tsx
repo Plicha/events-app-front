@@ -24,24 +24,21 @@ const RichText = dynamicImport(() => import('@/components/ui/RichText').then(mod
 
 export const revalidate = 300
 
-function getApiBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+const COUNTY_ID = process.env.NEXT_PUBLIC_COUNTY_ID
 
 function createApiHeaders(locale: string): Record<string, string> {
-  const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
   return {
     'x-locale': locale,
-    ...(countyId && { 'x-county-id': countyId }),
+    ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
   }
 }
 
 export async function generateStaticParams() {
-  const apiBaseUrl = getApiBaseUrl()
   const params: Array<{ locale: string; slug: string }> = []
 
   try {
-    const apiClient = new ApiClient(apiBaseUrl)
+    const apiClient = new ApiClient(API_BASE_URL)
 
     for (const locale of routing.locales) {
       try {
@@ -52,6 +49,7 @@ export async function generateStaticParams() {
             limit: '1000',
           },
           headers,
+          next: { revalidate: 300 },
         })
 
         if (response.docs && Array.isArray(response.docs)) {
@@ -73,13 +71,13 @@ export async function generateStaticParams() {
 }
 
 async function fetchEvent(slug: string, locale: string): Promise<Event | null> {
-  const apiBaseUrl = getApiBaseUrl()
-  const apiClient = new ApiClient(apiBaseUrl)
+  const apiClient = new ApiClient(API_BASE_URL)
   const headers = createApiHeaders(locale)
 
   try {
     const response = await apiClient.get<{ doc: Event }>(`/public/events/${slug}`, {
       headers,
+      next: { revalidate: 300 },
     })
     return response.doc || null
   } catch (error) {
@@ -97,10 +95,6 @@ export default async function EventDetailsPage({
 }) {
   const { slug, locale } = await params
   const t = await getTranslations({ locale, namespace: 'events' })
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[EventDetailsPage] Using API URL: ${getApiBaseUrl()}`)
-  }
 
   const event = await fetchEvent(slug, locale)
 
