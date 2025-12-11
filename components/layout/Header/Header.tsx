@@ -1,6 +1,5 @@
 import '@/lib/antd-patch'
-import { getTranslations } from 'next-intl/server'
-import { headers } from 'next/headers'
+import { createTranslator } from 'next-intl'
 import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
 import { Link } from '@/lib/i18n/routing'
@@ -12,9 +11,8 @@ interface HeaderProps {
 }
 
 export async function Header({ locale }: HeaderProps) {
-  const t = await getTranslations({ locale, namespace: 'nav' })
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || '/'
+  const messages = (await import(`../../messages/${locale}.json`)).default
+  const t = createTranslator({ locale, messages, namespace: 'nav' })
 
   const menuItems: MenuProps['items'] = [
     {
@@ -43,14 +41,7 @@ export async function Header({ locale }: HeaderProps) {
     },
   ]
 
-  const getSelectedKey = () => {
-    if (pathname.startsWith('/wydarzenia') || pathname.startsWith('/events')) return '/events'
-    if (pathname.startsWith('/o-nas') || pathname.startsWith('/about')) return '/about'
-    if (pathname.startsWith('/kontakt') || pathname.startsWith('/contact')) return '/contact'
-    return null
-  }
-
-  const selectedKey = getSelectedKey()
+  const selectedKey: string | null = null
 
   return (
     <header className={styles.header}>
