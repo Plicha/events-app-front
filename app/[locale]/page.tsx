@@ -28,7 +28,7 @@ export default async function Home({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const messages = (await import(`../messages/${locale}.json`)).default
+  const messages = (await import(`../../messages/${locale}.json`)).default
   const tCommon = createTranslator({ locale, messages, namespace: 'common' })
   const tEvents = createTranslator({ locale, messages, namespace: 'events' })
 
