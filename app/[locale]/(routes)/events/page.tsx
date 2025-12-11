@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
@@ -14,6 +14,9 @@ import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Suspense } from 'react'
 
 export const revalidate = 300
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+const COUNTY_ID = process.env.NEXT_PUBLIC_COUNTY_ID
 
 type EventsPageSearchParams = {
   search?: string
@@ -40,15 +43,9 @@ export default async function EventsPage({
   searchParams: Promise<EventsPageSearchParams>
 }) {
   const { locale } = await params
+  setRequestLocale(locale)
   const { search, from, to, city, category, page, limit, sort } = await searchParams
-  const t = await getTranslations({ locale, namespace: 'events' })
-  
-  // Use environment variable or fallback to backend service name (for Docker)
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-  
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[EventsPage] Using API URL: ${apiBaseUrl}`)
-  }
+  const t = await getTranslations('events')
 
   const apiParams: Record<string, string> = {
     locale: locale,
@@ -75,16 +72,16 @@ export default async function EventsPage({
   let paginationData: { current: number; total: number; pageSize: number } | null = null
 
   try {
-    const apiClient = new ApiClient(apiBaseUrl)
-    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
+    const apiClient = new ApiClient(API_BASE_URL)
     const headers: Record<string, string> = {
       'x-locale': locale,
-      ...(countyId && { 'x-county-id': countyId }),
+      ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
     }
 
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
       params: apiParams,
       headers,
+      next: { revalidate: 300 },
     })
     
     events = Array.isArray(response.docs) ? response.docs : []
