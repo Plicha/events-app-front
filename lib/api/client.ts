@@ -16,12 +16,17 @@ export class ApiClient {
       next?: { revalidate?: number }
     }
   ): Promise<T> {
-    const url = new URL(`${this.baseUrl}${endpoint}`)
+    let fullUrl = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`
 
     if (options?.params) {
+      const searchParams = new URLSearchParams()
       Object.entries(options.params).forEach(([key, value]) => {
-        url.searchParams.set(key, value)
+        searchParams.append(key, value)
       })
+      const queryString = searchParams.toString()
+      if (queryString) {
+        fullUrl += `?${queryString}`
+      }
     }
 
     const headers: HeadersInit = {
@@ -30,8 +35,6 @@ export class ApiClient {
     }
 
     try {
-      const fullUrl = url.toString()
-      
       if (process.env.NODE_ENV === 'development') {
         console.log(`[ApiClient] Fetching: ${fullUrl}`)
       }
@@ -63,8 +66,8 @@ export class ApiClient {
       }
 
       const errorMessage = error instanceof Error 
-        ? `${error.message} (URL: ${url.toString()})`
-        : `Unknown network error (URL: ${url.toString()})`
+        ? `${error.message} (URL: ${fullUrl})`
+        : `Unknown network error (URL: ${fullUrl})`
       
       if (process.env.NODE_ENV === 'development') {
         console.error(`[ApiClient] Network error:`, errorMessage, error)
