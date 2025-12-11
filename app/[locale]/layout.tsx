@@ -9,6 +9,7 @@ import { Header } from '@/components/layout/Header/Header'
 import plPL from 'antd/locale/pl_PL'
 import enUS from 'antd/locale/en_US'
 import '@/styles/globals.scss'
+import '@/styles/antd-overrides.scss'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -35,7 +36,32 @@ export default async function LocaleLayout({
       <body>
         <AntdRegistry>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <ConfigProvider locale={locale === 'pl' ? plPL : enUS}>
+            <ConfigProvider
+              locale={locale === 'pl' ? plPL : enUS}
+              theme={{
+                token: {
+                  borderRadius: 16,
+                  colorPrimary: '#13c2c2',
+                },
+                components: {
+                  Input: {
+                    borderRadius: 16,
+                  },
+                  Select: {
+                    borderRadius: 16,
+                  },
+                  DatePicker: {
+                    borderRadius: 16,
+                  },
+                  Card: {
+                    borderRadius: 8,
+                  },
+                  Badge: {
+                    borderRadius: 16,
+                  },
+                },
+              }}
+            >
               <Header locale={locale} />
               {children}
             </ConfigProvider>
