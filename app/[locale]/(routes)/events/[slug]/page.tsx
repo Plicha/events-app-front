@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
-import type { Event } from '@/types'
+import type { Event, ApiResponse } from '@/types'
 import { Row, Col, Image, Button, Space } from 'antd'
 import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LinkOutlined } from '@ant-design/icons'
 import { notFound } from 'next/navigation'
@@ -15,19 +15,79 @@ import {
   getCategoriesText,
 } from '@/lib/utils/eventHelpers'
 import { getLocalizedText } from '@/lib/utils/richText'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import styles from './page.module.scss'
 
-const RichText = dynamic(() => import('@/components/ui/RichText').then(mod => ({ default: mod.RichText })), {
+const RichText = dynamicImport(() => import('@/components/ui/RichText').then(mod => ({ default: mod.RichText })), {
   ssr: true,
 })
 
 export const revalidate = 300
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({
-    locale
-  }))
+function getApiBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
+}
+
+function createApiHeaders(locale: string): Record<string, string> {
+  const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
+  return {
+    'x-locale': locale,
+    ...(countyId && { 'x-county-id': countyId }),
+  }
+}
+
+export async function generateStaticParams() {
+  const apiBaseUrl = getApiBaseUrl()
+  const params: Array<{ locale: string; slug: string }> = []
+
+  try {
+    const apiClient = new ApiClient(apiBaseUrl)
+
+    for (const locale of routing.locales) {
+      try {
+        const headers = createApiHeaders(locale)
+        const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+          params: {
+            locale,
+            limit: '1000',
+          },
+          headers,
+        })
+
+        if (response.docs && Array.isArray(response.docs)) {
+          for (const event of response.docs) {
+            if (event.slug) {
+              params.push({ locale, slug: event.slug })
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`[generateStaticParams] Failed to fetch events for locale ${locale}:`, error)
+      }
+    }
+  } catch (error) {
+    console.error('[generateStaticParams] Error:', error)
+  }
+
+  return params
+}
+
+async function fetchEvent(slug: string, locale: string): Promise<Event | null> {
+  const apiBaseUrl = getApiBaseUrl()
+  const apiClient = new ApiClient(apiBaseUrl)
+  const headers = createApiHeaders(locale)
+
+  try {
+    const response = await apiClient.get<{ doc: Event }>(`/public/events/${slug}`, {
+      headers,
+    })
+    return response.doc || null
+  } catch (error) {
+    if (error instanceof BackendError && error.statusCode === 404) {
+      return null
+    }
+    throw error
+  }
 }
 
 export default async function EventDetailsPage({
@@ -37,34 +97,12 @@ export default async function EventDetailsPage({
 }) {
   const { slug, locale } = await params
   const t = await getTranslations({ locale, namespace: 'events' })
-  
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-  
+
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[EventDetailsPage] Using API URL: ${apiBaseUrl}`)
+    console.log(`[EventDetailsPage] Using API URL: ${getApiBaseUrl()}`)
   }
 
-  let event: Event | null = null
-
-  try {
-    const apiClient = new ApiClient(apiBaseUrl)
-    const countyId = process.env.NEXT_PUBLIC_COUNTY_ID
-    const headers: Record<string, string> = {
-      'x-locale': locale,
-      ...(countyId && { 'x-county-id': countyId }),
-    }
-
-    const response = await apiClient.get<{ doc: Event }>(`/public/events/${slug}`, {
-      headers,
-    })
-    
-    event = response.doc
-  } catch (error) {
-    if (error instanceof BackendError && error.statusCode === 404) {
-      notFound()
-    }
-    throw error
-  }
+  const event = await fetchEvent(slug, locale)
 
   if (!event) {
     notFound()
@@ -155,4 +193,3 @@ export default async function EventDetailsPage({
     </main>
   )
 }
-
