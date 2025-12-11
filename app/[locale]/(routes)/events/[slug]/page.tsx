@@ -14,7 +14,8 @@ import {
   getVenueName,
   getCategoriesText,
 } from '@/lib/utils/eventHelpers'
-import { extractTextFromRichText, getLocalizedText } from '@/lib/utils/richText'
+import { getLocalizedText } from '@/lib/utils/richText'
+import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
 
 export const revalidate = 300
@@ -71,7 +72,6 @@ export default async function EventDetailsPage({
   const imageUrl = coverUrl || categoryIconUrl
   
   const title = getLocalizedText(event.title, locale)
-  const summaryText = extractTextFromRichText(event.summaryAI)
   const formattedDate = formatEventDate(event.startsAt, locale)
   const cityName = getCityName(event.city, locale)
   const venueName = getVenueName(event.venue, locale)
@@ -104,8 +104,12 @@ export default async function EventDetailsPage({
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
               <h1>{title}</h1>
               
-              {summaryText && (
-                <p>{summaryText}</p>
+              {(event.summaryAI || event.summaryRaw) && (
+                <RichText 
+                  content={event.summaryAI || event.summaryRaw} 
+                  locale={locale}
+                  className={styles.eventSummary}
+                />
               )}
               
               <Space direction="vertical" size="middle">
