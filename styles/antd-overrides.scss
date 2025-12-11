@@ -1,0 +1,56 @@
+.ant-btn-primary {
+  position: relative;
+  background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%) !important;
+  border: none;
+  overflow: hidden;
+  border-color: transparent !important;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #08979c 0%, #13c2c2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+  }
+  
+  & > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  &:hover:not(:disabled)::before {
+    opacity: 1;
+  }
+  
+  &:active:not(:disabled)::before {
+    opacity: 1;
+  }
+}
+
+.ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease !important;
+  
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.ant-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  &.ant-btn-lg{
+    border-radius: 32px !important;
+  }
+}
+
+.ant-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.ant-picker-cell-inner, .ant-picker-cell-inner::before{
+  border-radius: 16px !important;
+}
