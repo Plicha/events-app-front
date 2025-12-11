@@ -91,7 +91,7 @@ export default async function EventDetailsPage({
 }) {
   const { slug, locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: 'events' })
+  const t = await getTranslations('events')
 
   const event = await fetchEvent(slug, locale)
 
