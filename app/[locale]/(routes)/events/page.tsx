@@ -4,7 +4,8 @@ import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
-import { Empty, Row, Col } from 'antd'
+import { Row, Col } from 'antd'
+import { HomeOutlined, CalendarOutlined } from '@ant-design/icons'
 import { getTodayDateString } from '@/lib/utils/date'
 import { EventFilters } from '@/components/features/events/EventFilters/EventFilters'
 import { EventsPagination } from '@/components/features/events/EventsPagination/EventsPagination'
@@ -12,6 +13,7 @@ import { PageSizeSelector } from '@/components/features/events/EventFilters/Page
 import { SortSelector } from '@/components/features/events/EventFilters/SortSelector'
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Suspense } from 'react'
+import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
 
 export const revalidate = 300
 
@@ -97,14 +99,25 @@ export default async function EventsPage({
     if (error instanceof BackendError && error.statusCode === 404) {
       notFound()
     }
-    // Log error but don't crash the page - show empty list instead
     console.error('Failed to fetch events:', error)
-    // Continue with empty events array
   }
+
+  const breadcrumbItems = [
+    {
+      href: '/',
+      title: t('breadcrumb.home'),
+      icon: <HomeOutlined />
+    },
+    {
+      title: t('breadcrumb.events'),
+      icon: <CalendarOutlined />
+    }
+  ]
 
   return (
     <main className="default-padding-y">
       <div className="container">
+        <StaticBreadcrumb items={breadcrumbItems} />
         <h1 className="title">{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />

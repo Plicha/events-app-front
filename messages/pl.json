@@ -43,7 +43,11 @@
     "free": "Bezpłatne",
     "promoted": "Promowane",
     "noImage": "Brak obrazu",
-    "source": "Źródło"
+    "source": "Źródło",
+    "breadcrumb": {
+      "home": "Strona główna",
+      "events": "Wydarzenia"
+    }
   },
   "about": {
     "title": "O nas",
@@ -57,6 +61,12 @@
       "message": "Wiadomość",
       "submit": "Wyślij"
     }
+  },
+  "breadcrumb": {
+    "home": "Strona główna",
+    "events": "Wydarzenia",
+    "about": "O nas",
+    "contact": "Kontakt"
   }
 }
 

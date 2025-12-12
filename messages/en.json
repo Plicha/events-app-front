@@ -43,7 +43,11 @@
     "free": "Free",
     "promoted": "Promoted",
     "noImage": "No image",
-    "source": "Source"
+    "source": "Source",
+    "breadcrumb": {
+      "home": "Home",
+      "events": "Events"
+    }
   },
   "about": {
     "title": "About",
@@ -57,6 +61,12 @@
       "message": "Message",
       "submit": "Submit"
     }
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "events": "Events",
+    "about": "About",
+    "contact": "Contact"
   }
 }
 
