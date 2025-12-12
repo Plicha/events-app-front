@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { getTodayDateString } from '@/lib/utils/date'
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Row } from 'antd'
+import { Suspense } from 'react'
 
 // Force dynamic rendering to ensure fresh data on every request
 // This is important for the homepage which filters events by today's date
@@ -90,7 +91,9 @@ export default async function Home({
       <div className="container">
         <h1>{tCommon('title')}</h1>
         <br />
-        <EventsList events={events} locale={locale} />
+        <Suspense fallback={<div>Loading events...</div>}>
+          <EventsList events={events} locale={locale} />
+        </Suspense>
         {events.length > 0 && (
           <Row justify="center" style={{ marginTop: 16 }}>
             <Link href={`/${locale}/events`}>
