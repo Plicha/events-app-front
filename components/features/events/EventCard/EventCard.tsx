@@ -13,6 +13,7 @@ import timezone from 'dayjs/plugin/timezone'
 import 'dayjs/locale/pl'
 import 'dayjs/locale/en'
 import styles from './EventCard.module.scss'
+import { useRouter } from 'next/navigation'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -171,11 +172,12 @@ export function EventCard({ event, locale }: EventCardProps) {
   const categoriesText = getCategoriesText(event.categories, locale)
   const eventSlug = getEventSlug(event)
   const eventUrl = `/${locale}/events/${eventSlug}`
+  const router = useRouter()
 
   const cardContent = (
-    <Card>
+    <Card onClick={() => router.push(eventUrl)}>
         <Row gutter={[16, 16]}>
-          <Col xs={24} sm={6} md={4}>
+          <Col xs={10} sm={6} md={4}>
             {imageUrl ? (
               <div className={styles.imageContainer}>
                 <Image
@@ -191,9 +193,9 @@ export function EventCard({ event, locale }: EventCardProps) {
               </div>
             )}
           </Col>
-          <Col xs={24} sm={18} md={20}>
+          <Col xs={14} sm={18} md={20}>
             <Space direction="vertical" size="small" className={styles.contentSpace}>
-              <Title level={4} className={styles.title}>
+              <Title level={2} className={styles.title}>
                 {title}
               </Title>
               
