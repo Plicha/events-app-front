@@ -1,11 +1,10 @@
 import { createTranslator } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
-import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { BackendError } from '@/lib/api/errors'
 import type { Event, ApiResponse } from '@/types'
 import { Row, Col, Image, Button, Space } from 'antd'
-import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LinkOutlined } from '@ant-design/icons'
+import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LinkOutlined, HomeOutlined } from '@ant-design/icons'
 import { notFound } from 'next/navigation'
 import {
   formatEventDate,
@@ -18,6 +17,8 @@ import {
 import { getLocalizedText } from '@/lib/utils/richText'
 import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
+import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
+import { routing, Link as IntlLink } from '@/lib/i18n/routing'
 
 export const revalidate = 300
 
@@ -113,9 +114,28 @@ export default async function EventDetailsPage({
   const venueAddress = venue?.address || ''
   const categoriesText = getCategoriesText(event.categories, locale)
 
+  const eventsPath = locale === 'pl' ? '/wydarzenia' : '/events'
+
+  const breadcrumbItems = [
+    {
+      href: '/',
+      title: t('breadcrumb.home'),
+      icon: <HomeOutlined />
+    },
+    {
+      href: eventsPath,
+      title: t('breadcrumb.events'),
+      icon: <CalendarOutlined />
+    },
+    {
+      title: title
+    }
+  ]
+
   return (
     <main className="default-padding-y">
       <div className="container">
+        <StaticBreadcrumb items={breadcrumbItems} />
         <Row gutter={[32, 32]}>
           <Col xs={24} md={6}>
             {imageUrl ? (
