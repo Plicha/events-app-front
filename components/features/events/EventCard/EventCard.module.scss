@@ -49,8 +49,25 @@
 .summaryText {
   display: block;
 }
+.title{
+  font-size: 1.5rem !important;
+  line-height: 1.4 !important;
+}
 
 .viewDetailsButtonWrapper {
   display: flex;
   justify-content: flex-end;
+}
+
+@media (max-width: $breakpoint-sm) {
+  .summaryText{
+    display: none;
+  }
+  .imageContainer{
+    height: 140px;
+  }
+  .title{
+    font-size: 1.125rem !important;
+    line-height: 1.2 !important;
+  }
 }
