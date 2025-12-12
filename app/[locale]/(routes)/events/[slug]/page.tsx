@@ -168,15 +168,18 @@ export default async function EventDetailsPage({
               </Space>
               
               {event.sourceUrl && (
-                <Button
-                  type="primary"
-                  icon={<LinkOutlined />}
-                  href={event.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('source')}
-                </Button>
+                <div className={styles.sourceButtonContainer}>
+                    <Button
+                      type="primary"
+                      icon={<LinkOutlined />}
+                      href={event.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.sourceButton}
+                    >
+                      {t('source')}
+                    </Button>
+                </div>
               )}
             </Space>
           </Col>
