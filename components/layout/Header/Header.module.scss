@@ -1,9 +1,8 @@
 .header {
-  border-bottom: 1px solid $color-border;
-  background-color: $color-background;
   position: sticky;
   top: 0;
   z-index: 1000;
+  background-color: #fff;
 }
 
 .container {
@@ -20,7 +19,6 @@
   font-size: $logo-font-size;
   font-weight: $logo-font-weight;
   text-decoration: none;
-  color: $color-text;
 }
 
 .navContainer {

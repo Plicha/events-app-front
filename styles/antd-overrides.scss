@@ -1,22 +1,8 @@
 .ant-btn-primary {
   position: relative;
-  background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%) !important;
   border: none;
   overflow: hidden;
   border-color: transparent !important;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #08979c 0%, #13c2c2 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 0;
-  }
   
   & > * {
     position: relative;
@@ -43,8 +29,15 @@
 
 .ant-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: none !important;
   &.ant-btn-lg{
-    border-radius: 32px !important;
+    border-radius: 40px !important;
+    &.ant-btn-compact-last-item{
+      border-radius: 0 40px 40px 0 !important;
+    }
+    &.ant-btn-compact-first-item{
+      border-radius: 40px 0 0 40px !important;
+    }
   }
 }
 
@@ -53,4 +46,42 @@
 }
 .ant-picker-cell-inner, .ant-picker-cell-inner::before{
   border-radius: 16px !important;
+}
+
+.ant-input-lg, .ant-picker-large {
+  border-radius: 40px !important;
+}
+
+.ant-picker-large{
+  padding: 7px 16px !important;
+}
+
+.ant-input-affix-wrapper-lg {
+  padding: 4px 16px !important;
+  border-radius: 40px !important;
+  &.ant-input-compact-first-item{
+    border-radius: 40px 0 0 40px !important;
+  }
+  &.ant-input-compact-last-item{
+    border-radius: 0 40px 40px 0 !important;
+  }
+}
+
+.ant-select-lg, .ant-select-lg .ant-select-selector{
+  border-radius: 40px !important;
+  &.ant-select-compact-first-item{
+    border-radius: 40px 0 0 40px !important;
+  }
+  &.ant-select-compact-last-item{
+    border-radius: 0 40px 40px 0 !important;
+  }
+}
+.ant-select-lg .ant-select-selector{
+  padding: 0 16px !important;
+}
+.ant-select-item{
+  border-radius: 40px !important;
+  &[aria-selected="true"]{
+    color: $white-color !important;
+  }
 }

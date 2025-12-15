@@ -70,6 +70,8 @@ function SearchBarContent() {
   return (
     <Space.Compact style={{ width: '100%' }}>
       <Input
+        id='search-bar'
+        size="large"
         placeholder={t('searchPlaceholder')}
         value={searchValue}
         onChange={handleChange}
@@ -77,6 +79,7 @@ function SearchBarContent() {
         allowClear
       />
       <Button 
+        size="large"
         type="primary" 
         icon={<SearchOutlined />}
         onClick={handleSearch}
@@ -93,8 +96,8 @@ export function SearchBar({ placeholder }: SearchBarProps) {
   return (
     <Suspense fallback={
       <Space.Compact style={{ width: '100%' }}>
-        <Input placeholder={placeholder} disabled />
-        <Button type="primary" icon={<SearchOutlined />} disabled />
+        <Input size="large" placeholder={placeholder} disabled />
+        <Button size="large" type="primary" icon={<SearchOutlined />} disabled />
       </Space.Compact>
     }>
       <SearchBarContent />

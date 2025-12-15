@@ -4,12 +4,22 @@ import crypto from 'crypto'
 
 const DEFAULT_TTL = 300
 
+function shouldBypassCache(request: NextRequest): boolean {
+  const pathname = request.nextUrl.pathname
+  // Some endpoints are used to drive UI filters and should reflect CMS changes immediately.
+  if (pathname === '/api/public/categories') {
+    return true
+  }
+  return false
+}
+
 function generateCacheKey(
   url: string,
   headers: Record<string, string | null>
 ): string {
   const relevantHeaders = {
     'x-locale': headers['x-locale'],
+    'x-county-id': headers['x-county-id'],
   }
 
   const keyData = `${url}:${JSON.stringify(relevantHeaders)}`
@@ -19,9 +29,14 @@ function generateCacheKey(
 export async function getCachedResponse(
   request: NextRequest
 ): Promise<Response | null> {
+  if (shouldBypassCache(request)) {
+    return null
+  }
+
   const url = request.nextUrl.toString()
   const headers: Record<string, string | null> = {
     'x-locale': request.headers.get('x-locale'),
+    'x-county-id': request.headers.get('x-county-id'),
   }
 
   const cacheKey = generateCacheKey(url, headers)
@@ -51,9 +66,14 @@ export async function setCachedResponse(
     return
   }
 
+  if (shouldBypassCache(request)) {
+    return
+  }
+
   const url = request.nextUrl.toString()
   const headers: Record<string, string | null> = {
     'x-locale': request.headers.get('x-locale'),
+    'x-county-id': request.headers.get('x-county-id'),
   }
 
   const cacheKey = generateCacheKey(url, headers)

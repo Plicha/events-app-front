@@ -1,0 +1,34 @@
+// :global(.ant-space-item) {
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+.select {
+  width: 100%;
+}
+
+.iconWrap {
+  display: flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconWrap :global(svg) {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.iconImg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  object-fit: contain;
+}
+
+.spaceItem {
+    display: flex !important;
+}

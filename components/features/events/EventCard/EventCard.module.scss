@@ -1,7 +1,43 @@
+:global(.ant-card-body){
+  cursor: pointer;
+  
+  @media (max-width: $breakpoint-sm) {
+    padding: 16px !important;
+  }
+}
+
 .imageContainer {
   width: 100%;
-  height: 200px;
+  height: 100%;
   overflow: hidden;
+  position: relative;
+  background-color: #f5f5f5;
+  padding: 16px 24px;
+  box-shadow: 0 2px 4px rgb($primary-color, 0.25);
+  overflow: hidden;
+  border-radius: 8px;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 8px 12px;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    filter: blur(10px);
+    transform: scale(1.15);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.15);
+  }
   
   :global(.ant-image) {
     width: 100%;
@@ -11,6 +47,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    img{
+      border-radius: 4px !important;  
+    }
+    
   }
   
   :global(.ant-image-img) {
@@ -19,9 +59,19 @@
     height: auto !important;
     max-width: 100% !important;
     max-height: 100% !important;
-    min-width: 75px !important;
-    min-height: 100px !important;
+    min-width: 50px !important;
+    min-height: 75px !important;
   }
+}
+
+.foregroundImage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .placeholderContainer {
