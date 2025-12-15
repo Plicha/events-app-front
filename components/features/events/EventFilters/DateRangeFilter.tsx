@@ -137,6 +137,7 @@ function DateRangeFilterContent({ locale }: { locale: string }) {
   return (
     <div className={styles.dateRangeFilter}>
       <RangePicker
+        size="large"
         value={value}
         onChange={handleChange}
         presets={getPresetRanges()}

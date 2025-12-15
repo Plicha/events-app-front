@@ -26,12 +26,13 @@ interface EventCardProps {
 }
 
 function formatEventDate(dateString: string, locale: string): string {
-  const date = dayjs.utc(dateString)
-  dayjs.locale(locale === 'pl' ? 'pl' : 'en')
-  
-  const localDate = date.tz('Europe/Warsaw')
-  
-  return localDate.format('DD.MM.YYYY, HH:mm')
+  const normalizedLocale = locale === 'pl' ? 'pl' : 'en'
+
+  return dayjs
+    .utc(dateString)
+    .tz('Europe/Warsaw')
+    .locale(normalizedLocale)
+    .format('DD.MM.YYYY, HH:mm')
 }
 
 function buildMediaUrl(urlOrPath: string): string {

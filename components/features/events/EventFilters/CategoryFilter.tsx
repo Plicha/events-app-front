@@ -17,7 +17,6 @@ function CategoryFilterContent({ locale }: { locale: string }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  const categoryParam = searchParams.get('category')
   const [value, setValue] = useState<string | undefined>(undefined)
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -106,6 +105,7 @@ function CategoryFilterContent({ locale }: { locale: string }) {
 
   return (
     <Select
+      size="large"
       placeholder={t('categoryPlaceholder')}
       value={displayValue}
       onChange={handleChange}

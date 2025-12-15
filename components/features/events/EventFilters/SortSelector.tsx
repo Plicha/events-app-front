@@ -26,6 +26,7 @@ export function SortSelector({ locale, currentSort = 'asc' }: SortSelectorProps)
 
   return (
     <Select
+      size="large"
       value={currentSort}
       onChange={handleChange}
       style={{ width: '100%' }}

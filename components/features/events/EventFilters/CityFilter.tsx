@@ -111,6 +111,7 @@ function CityFilterContent({ locale }: { locale: string }) {
 
   return (
     <Select
+      size="large"
       placeholder={t('cityPlaceholder')}
       value={displayValue}
       onChange={handleChange}

@@ -41,7 +41,7 @@ export default async function LocaleLayout({
               theme={{
                 token: {
                   borderRadius: 16,
-                  colorPrimary: '#13c2c2',
+                  colorPrimary: '#262626',
                 },
                 components: {
                   Input: {

@@ -26,6 +26,7 @@ export function PageSizeSelector({ locale, currentPageSize = 20 }: PageSizeSelec
 
   return (
     <Select
+      size="large"
       value={currentPageSize}
       onChange={handleChange}
       style={{ width: '100%' }}
