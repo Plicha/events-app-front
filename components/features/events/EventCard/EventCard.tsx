@@ -5,6 +5,7 @@ import { Card, Badge, Typography, Button, Row, Col, Image, Space } from 'antd'
 import { CalendarOutlined, EnvironmentOutlined, TagOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import type { CSSProperties } from 'react'
 import type { Event, Category } from '@/types'
 import { extractTextFromRichText, truncateText, getLocalizedText } from '@/lib/utils/richText'
 import dayjs from 'dayjs'
@@ -161,9 +162,7 @@ export function EventCard({ event, locale }: EventCardProps) {
   const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl)
   const categoryIconUrl = getCategoryIconUrl(event.categories)
   const imageUrl = coverUrl || categoryIconUrl
-  
-  dayjs.locale(locale === 'pl' ? 'pl' : 'en')
-  
+
   const title = getLocalizedText(event.title, locale)
   const summaryText = extractTextFromRichText(event.summaryAI || event.summaryRaw, locale)
   const truncatedSummary = truncateText(summaryText, 150)
@@ -180,13 +179,18 @@ export function EventCard({ event, locale }: EventCardProps) {
         <Row gutter={[16, 16]}>
           <Col xs={10} sm={6} md={4}>
             {imageUrl ? (
-              <div className={styles.imageContainer}>
-                <Image
-                  src={imageUrl}
-                  alt={title}
-                  fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
-                  preview={false}
-                />
+              <div
+                className={styles.imageContainer}
+                style={{ ['--bg-image' as any]: `url("${imageUrl}")` } as CSSProperties}
+              >
+                <div className={styles.foregroundImage}>
+                  <Image
+                    src={imageUrl}
+                    alt={title}
+                    fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
+                    preview={false}
+                  />
+                </div>
               </div>
             ) : (
               <div className={styles.placeholderContainer}>
