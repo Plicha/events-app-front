@@ -1,5 +1,9 @@
 :global(.ant-card-body){
   cursor: pointer;
+  
+  @media (max-width: $breakpoint-sm) {
+    padding: 16px !important;
+  }
 }
 
 .imageContainer {
@@ -12,6 +16,10 @@
   box-shadow: 0 2px 4px rgb($primary-color, 0.25);
   overflow: hidden;
   border-radius: 8px;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 8px 12px;
+  }
 
   &::before {
     content: '';
@@ -39,6 +47,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    img{
+      border-radius: 4px !important;  
+    }
+    
   }
   
   :global(.ant-image-img) {

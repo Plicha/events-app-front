@@ -29,6 +29,7 @@ export async function EventFilters({ locale }: EventFiltersProps) {
           </Col>
         </Row>
     </form>
+    
   )
 }
 
