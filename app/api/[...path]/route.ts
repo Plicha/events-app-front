@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isOriginAllowed } from '@/lib/api/origin'
 import { checkRateLimit } from '@/lib/api/rate-limit'
 import { getCachedResponse, setCachedResponse } from '@/lib/api/cache'
-import { ApiClient } from '@/lib/api/client'
 import { OriginNotAllowedError, BackendError, NetworkError } from '@/lib/api/errors'
 
 const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:3000/api'
-const apiClient = new ApiClient(BACKEND_URL)
 
 function getClientIP(request: NextRequest): string {
   return (
@@ -75,10 +73,53 @@ export async function GET(
       params[key] = value
     })
 
-    const data = await apiClient.get(apiPath, {
-      params,
-      headers,
+    const upstreamUrl = new URL(`${BACKEND_URL.replace(/\/$/, '')}${apiPath}`)
+    Object.entries(params).forEach(([key, value]) => {
+      upstreamUrl.searchParams.set(key, value)
     })
+
+    // Avoid Next's fetch cache here; this route handles caching (JSON only) itself.
+    const upstreamRes = await fetch(upstreamUrl.toString(), {
+      method: 'GET',
+      headers: {
+        ...headers,
+      },
+      cache: 'no-store',
+    })
+
+    const contentType = upstreamRes.headers.get('content-type') || ''
+
+    // Pass-through for non-JSON (e.g. media files). This makes URLs like `/api/media/file/*.svg` work.
+    if (!contentType.includes('application/json')) {
+      const passHeaders = new Headers()
+      upstreamRes.headers.forEach((value, key) => {
+        passHeaders.set(key, value)
+      })
+      passHeaders.set('X-Cache', 'BYPASS')
+
+      if (originCheck.origin) {
+        passHeaders.set('Access-Control-Allow-Origin', originCheck.origin)
+        passHeaders.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        passHeaders.set(
+          'Access-Control-Allow-Headers',
+          'Content-Type, x-locale, x-county-id'
+        )
+      }
+
+      return new NextResponse(upstreamRes.body, {
+        status: upstreamRes.status,
+        headers: passHeaders,
+      })
+    }
+
+    if (!upstreamRes.ok) {
+      throw new BackendError(
+        `Backend error: ${upstreamRes.status} ${upstreamRes.statusText} (${upstreamUrl.toString()})`,
+        upstreamRes.status
+      )
+    }
+
+    const data = await upstreamRes.json()
 
     const response = NextResponse.json(data)
     response.headers.set('X-Cache', 'MISS')

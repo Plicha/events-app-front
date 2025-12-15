@@ -2,13 +2,15 @@
 
 import '@/lib/antd-patch'
 import { useState, useEffect, Suspense } from 'react'
-import { Select } from 'antd'
+import { Select, Space } from 'antd'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import styles from './CategoryFilter.module.scss'
 
 interface Category {
   id: string | number
   name: string | { pl: string; en: string }
+  icon?: string | { url?: string; mimeType?: string; filename?: string; alt?: string }
 }
 
 function CategoryFilterContent({ locale }: { locale: string }) {
@@ -20,6 +22,7 @@ function CategoryFilterContent({ locale }: { locale: string }) {
   const [value, setValue] = useState<string | undefined>(undefined)
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [svgByUrl, setSvgByUrl] = useState<Record<string, string>>({})
 
   useEffect(() => {
     async function fetchCategories() {
@@ -72,6 +75,86 @@ function CategoryFilterContent({ locale }: { locale: string }) {
     }
   }, [searchParams, categories, loading])
 
+  const getIconUrl = (category: Category): string | null => {
+    const icon = category.icon
+    if (!icon) return null
+    if (typeof icon === 'string') return null
+    if (typeof icon === 'object' && typeof icon.url === 'string') return icon.url
+    return null
+  }
+
+  const isSvgIcon = (category: Category): boolean => {
+    const icon = category.icon
+    if (!icon || typeof icon === 'string') return false
+    return icon.mimeType === 'image/svg+xml' || (icon.url?.toLowerCase().endsWith('.svg') ?? false)
+  }
+
+  const sanitizeSvg = (raw: string): string => {
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(raw, 'image/svg+xml')
+      const svg = doc.documentElement
+
+      svg.querySelectorAll('script, foreignObject').forEach((n) => n.remove())
+
+      svg.querySelectorAll('*').forEach((el) => {
+        Array.from(el.attributes).forEach((attr) => {
+          const name = attr.name.toLowerCase()
+          const value = attr.value
+          if (name.startsWith('on')) el.removeAttribute(attr.name)
+          if ((name === 'href' || name === 'xlink:href' || name === 'src') && /^javascript:/i.test(value)) {
+            el.removeAttribute(attr.name)
+          }
+        })
+      })
+
+      svg.setAttribute('width', '1em')
+      svg.setAttribute('height', '1em')
+      svg.setAttribute('focusable', 'false')
+      svg.setAttribute('aria-hidden', 'true')
+
+      return svg.outerHTML
+    } catch {
+      return ''
+    }
+  }
+
+  useEffect(() => {
+    if (loading) return
+    const svgCategories = categories.filter((c) => isSvgIcon(c))
+    if (svgCategories.length === 0) return
+
+    const controller = new AbortController()
+
+    ;(async () => {
+      const entries = await Promise.all(
+        svgCategories.map(async (cat) => {
+          const url = getIconUrl(cat)
+          if (!url || svgByUrl[url]) return null
+          try {
+            const res = await fetch(url, { signal: controller.signal })
+            if (!res.ok) return null
+            const text = await res.text()
+            const sanitized = sanitizeSvg(text)
+            return sanitized ? ([url, sanitized] as const) : null
+          } catch {
+            return null
+          }
+        })
+      )
+
+      const next: Record<string, string> = {}
+      for (const e of entries) {
+        if (e) next[e[0]] = e[1]
+      }
+      if (Object.keys(next).length > 0) {
+        setSvgByUrl((prev) => ({ ...prev, ...next }))
+      }
+    })()
+
+    return () => controller.abort()
+  }, [categories, loading])
+
   const handleChange = (categoryId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('page')
@@ -95,11 +178,6 @@ function CategoryFilterContent({ locale }: { locale: string }) {
     return category.name[locale as 'pl' | 'en'] || category.name.pl || category.name.en || ''
   }
 
-  const filterOption = (input: string, option?: { label: string; value: string }) => {
-    if (!option) return false
-    return option.label.toLowerCase().includes(input.toLowerCase())
-  }
-
   const selectedCategory = value ? categories.find(category => String(category.id) === String(value)) : null
   const displayValue = (!loading && selectedCategory && value) ? String(value) : null
 
@@ -112,10 +190,34 @@ function CategoryFilterContent({ locale }: { locale: string }) {
       showSearch
       allowClear
       loading={loading}
-      filterOption={filterOption}
-      style={{ width: '100%' }}
+      optionFilterProp="title"
+      className={styles.select}
       options={categories.map((category) => ({
-        label: getCategoryName(category),
+        title: getCategoryName(category),
+        label: (
+          <Space align="center" size={8} className={styles.spaceItem}>
+            {(() => {
+              const url = getIconUrl(category)
+              if (!url) return null
+              if (isSvgIcon(category) && svgByUrl[url]) {
+                return (
+                  <span
+                    className={styles.iconWrap}
+                    dangerouslySetInnerHTML={{ __html: svgByUrl[url] }}
+                  />
+                )
+              }
+              return (
+                <img
+                  src={url}
+                  alt="icon"
+                  className={styles.iconImg}
+                />
+              )
+            })()}
+            <span>{getCategoryName(category)}</span>
+          </Space>
+        ),
         value: String(category.id),
       }))}
       notFoundContent={loading ? null : undefined}
@@ -131,7 +233,7 @@ export function CategoryFilter({ locale }: CategoryFilterProps) {
   const t = useTranslations('events')
 
   return (
-    <Suspense fallback={<Select placeholder={t('categoryPlaceholder')} disabled style={{ width: '100%' }} />}>
+    <Suspense fallback={<Select placeholder={t('categoryPlaceholder')} disabled className={styles.select} />}>
       <CategoryFilterContent locale={locale} />
     </Suspense>
   )
