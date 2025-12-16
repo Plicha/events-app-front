@@ -38,6 +38,8 @@ export default async function Home({
   const tEvents = createTranslator({ locale, messages, namespace: 'events' })
 
   // Fetch homepage settings
+  console.log('[HomePage] Starting homepage settings fetch, COUNTY_ID:', COUNTY_ID, 'locale:', locale)
+
   let homepageSettings: {
     headline: string
     backgroundImage: { url: string; alt: string } | null
@@ -65,6 +67,14 @@ export default async function Home({
 
     homepageSettings = settings
   } catch (error) {
+    // DEBUG: print the error
+    console.error('[HomePage] ERROR fetching homepage settings:', error)
+
+    if (error instanceof Error) {
+      console.error('[HomePage] Error message:', error.message)
+      console.error('[HomePage] Error stack:', error.stack)
+    }
+    
     // Silently fail - homepage settings are optional
     if (process.env.NODE_ENV === 'development') {
       console.warn('Failed to fetch homepage settings:', error)
