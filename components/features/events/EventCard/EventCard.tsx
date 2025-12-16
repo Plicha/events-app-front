@@ -41,11 +41,16 @@ type CategoryIconMeta = {
 function formatEventDate(dateString: string, locale: string): string {
   const normalizedLocale = locale === 'pl' ? 'pl' : 'en'
 
-  return dayjs
+  const date = dayjs
     .utc(dateString)
     .tz('Europe/Warsaw')
     .locale(normalizedLocale)
-    .format('DD.MM.YYYY, HH:mm')
+
+  if (date.hour() === 0 && date.minute() === 0) {
+    return date.format('DD.MM.YYYY')
+  }
+
+  return date.format('DD.MM.YYYY, HH:mm')
 }
 
 function buildMediaUrl(urlOrPath: string): string {
