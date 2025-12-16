@@ -93,7 +93,7 @@
 }
 
 .title {
-  margin: 0;
+  margin: 0 !important;
 }
 
 .summaryText {
@@ -109,6 +109,53 @@
   justify-content: flex-end;
 }
 
+.categoryIcon {
+  width: 16px;
+  height: 16px; 
+  display: inline-block;
+  object-fit: contain;
+  flex-shrink: 0;
+  
+  :global(svg) {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+}
+
+.categoryIconWrap {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: inherit;
+  
+  :global(svg) {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+}
+
+.categoryIconSpin {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.categoryBadge {
+  padding: 4px 8px;
+  border-radius: 32px;
+  color: $white-color;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
 @media (max-width: $breakpoint-sm) {
   .summaryText{
     display: none;
@@ -119,5 +166,12 @@
   .title{
     font-size: 1.125rem !important;
     line-height: 1.2 !important;
+  }
+  .categoryBadge{
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+  .categoryBadgeWrapper{
+    gap: 4px !important;
   }
 }

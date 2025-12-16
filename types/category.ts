@@ -5,5 +5,6 @@ export interface Category {
   icon?: string | { id: string; url: string; alt?: string }
   createdAt: string
   updatedAt: string
+  color?: string
 }
 
