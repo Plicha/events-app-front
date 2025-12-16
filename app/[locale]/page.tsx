@@ -10,6 +10,7 @@ import { getTodayDateString } from '@/lib/utils/date'
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Row } from 'antd'
 import { Suspense } from 'react'
+import { IntroSection } from '@/components/features/homepage/IntroSection/IntroSection'
 
 // Force dynamic rendering to ensure fresh data on every request
 // This is important for the homepage which filters events by today's date
@@ -35,6 +36,38 @@ export default async function Home({
   const messages = (await import(`../../messages/${locale}.json`)).default
   const tCommon = createTranslator({ locale, messages, namespace: 'common' })
   const tEvents = createTranslator({ locale, messages, namespace: 'events' })
+
+  // Fetch homepage settings
+  let homepageSettings: {
+    headline: string
+    backgroundImage: { url: string; alt: string } | null
+  } = {
+    headline: '',
+    backgroundImage: null,
+  }
+
+  try {
+    const apiClient = new ApiClient(API_BASE_URL)
+    const headers: Record<string, string> = {
+      'x-locale': locale,
+      ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
+    }
+
+    const settings = await apiClient.get<{
+      headline: string
+      backgroundImage: { url: string; alt: string } | null
+    }>('/public/homepage-settings', {
+      headers,
+      next: { revalidate: 300 },
+    })
+
+    homepageSettings = settings
+  } catch (error) {
+    // Silently fail - homepage settings are optional
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to fetch homepage settings:', error)
+    }
+  }
 
   let events: Event[] = []
   const todayDateString = getTodayDateString()
@@ -87,24 +120,34 @@ export default async function Home({
   }
 
   return (
-    <main className="default-padding-y">
-      <div className="container">
-        <h1>{tCommon('title')}</h1>
-        <br />
-        <Suspense fallback={<div>Loading events...</div>}>
-          <EventsList events={events} locale={locale} />
-        </Suspense>
-        {events.length > 0 && (
-          <Row justify="center" style={{ marginTop: 16 }}>
-            <Link href={`/${locale}/events`}>
-              <Button type="primary" size="large">
-                {tEvents('viewAllEvents')}
-              </Button>
-            </Link>
-          </Row>
-        )}
-      </div>
-    </main>
+    <>
+      <main className="default-padding-y">
+        <div className="container">
+          {(homepageSettings.headline || homepageSettings.backgroundImage) && (
+            <IntroSection
+              headline={homepageSettings.headline}
+              backgroundImageUrl={homepageSettings.backgroundImage?.url || null}
+              backgroundImageAlt={homepageSettings.backgroundImage?.alt || ''}
+              locale={locale}
+            />
+          )}
+          {!homepageSettings.headline && <h1>{tCommon('title')}</h1>}
+          {homepageSettings.headline && <br />}
+          <Suspense fallback={<div>Loading events...</div>}>
+            <EventsList events={events} locale={locale} />
+          </Suspense>
+          {events.length > 0 && (
+            <Row justify="center" style={{ marginTop: 16 }}>
+              <Link href={`/${locale}/events`}>
+                <Button type="primary" size="large">
+                  {tEvents('viewAllEvents')}
+                </Button>
+              </Link>
+            </Row>
+          )}
+        </div>
+      </main>
+    </>
   )
 }
 

@@ -1,8 +1,10 @@
-:global(.ant-card-body){
+.card {
   cursor: pointer;
+  :global(.ant-card-body){
   
-  @media (max-width: $breakpoint-sm) {
-    padding: 16px !important;
+    @media (max-width: $breakpoint-sm) {
+      padding: 16px !important;
+    }
   }
 }
 
