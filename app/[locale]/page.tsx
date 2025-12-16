@@ -12,8 +12,6 @@ import { Row } from 'antd'
 import { Suspense } from 'react'
 import { IntroSection } from '@/components/features/homepage/IntroSection/IntroSection'
 
-// Force dynamic rendering to ensure fresh data on every request
-// This is important for the homepage which filters events by today's date
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
@@ -37,8 +35,6 @@ export default async function Home({
   const tCommon = createTranslator({ locale, messages, namespace: 'common' })
   const tEvents = createTranslator({ locale, messages, namespace: 'events' })
 
-  // Fetch homepage settings
-  console.log('[HomePage] Starting homepage settings fetch, COUNTY_ID:', COUNTY_ID, 'locale:', locale)
 
   let homepageSettings: {
     headline: string
@@ -60,22 +56,11 @@ export default async function Home({
       backgroundImage: { url: string; alt: string } | null
     }>('/public/homepage-settings', {
       headers,
-      next: { revalidate: 0 },
+      next: { revalidate: 300 },
     })
-// DEBUG: print the settings
-    console.log('[HomePage] Homepage settings fetched:', settings) 
 
     homepageSettings = settings
   } catch (error) {
-    // DEBUG: print the error
-    console.error('[HomePage] ERROR fetching homepage settings:', error)
-
-    if (error instanceof Error) {
-      console.error('[HomePage] Error message:', error.message)
-      console.error('[HomePage] Error stack:', error.stack)
-    }
-    
-    // Silently fail - homepage settings are optional
     if (process.env.NODE_ENV === 'development') {
       console.warn('Failed to fetch homepage settings:', error)
     }
