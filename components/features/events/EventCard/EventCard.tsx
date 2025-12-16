@@ -355,7 +355,7 @@ export function EventCard({ event, locale }: EventCardProps) {
   const router = useRouter()
 
   const cardContent = (
-    <Card onClick={() => router.push(eventUrl)}>
+    <Card className={styles.card} onClick={() => router.push(eventUrl)}>
         <Row gutter={[16, 16]}>
           <Col xs={10} sm={6} md={4}>
             {imageUrl ? (
