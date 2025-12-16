@@ -58,8 +58,10 @@ export default async function Home({
       backgroundImage: { url: string; alt: string } | null
     }>('/public/homepage-settings', {
       headers,
-      next: { revalidate: 300 },
+      next: { revalidate: 0 },
     })
+// DEBUG: print the settings
+    console.log('[HomePage] Homepage settings fetched:', settings) 
 
     homepageSettings = settings
   } catch (error) {
