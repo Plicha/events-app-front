@@ -392,10 +392,18 @@ export function EventCard({ event, locale }: EventCardProps) {
                 
                 {categories.length > 0 && (
                   
-                    <Space size={8} wrap>
+                    <Space size={8} wrap className={styles.categoryBadgeWrapper}> 
                       {categoriesWithIconMeta.map(({ category, iconUrl, isSvg, name }) => {
+                        const colorClass = category.color ? `bg-${category.color}` : ''
+                        const badgeClasses = [styles.categoryBadge, colorClass].filter(Boolean).join(' ')
+                        
                         return (
-                          <Space key={category.id || category.slug} size={4} align="center">
+                          <Space 
+                            key={category.id || category.slug} 
+                            size={4} 
+                            align="center"
+                            className={badgeClasses}
+                          >
                             {iconUrl && (
                               <>
                                 {isSvg

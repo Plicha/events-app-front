@@ -89,6 +89,10 @@ body {
   background-color: $french-magenta;
 }
 
+.bg-grey {
+  background-color: $grey;
+}
+
 // Text colors
 .text-white {
   color: $white-color;
@@ -142,6 +146,10 @@ body {
   color: $french-magenta;
 }
 
+.text-grey {
+  color: $grey;
+}
+
 // Border colors
 .border-white {
   border-color: $white-color;
@@ -193,4 +201,8 @@ body {
 
 .border-french-magenta {
   border-color: $french-magenta;
+}
+
+.border-grey {
+  border-color: $grey;
 }

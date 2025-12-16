@@ -148,6 +148,16 @@
   color: inherit;
 }
 
+.categoryBadgeWrapper{
+  margin: 4px 0;
+}
+
+.categoryBadge {
+  padding: 4px 12px;
+  border-radius: 32px;
+  color: $white-color;
+}
+
 @media (max-width: $breakpoint-sm) {
   .summaryText{
     display: none;
