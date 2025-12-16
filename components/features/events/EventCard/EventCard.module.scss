@@ -93,7 +93,7 @@
 }
 
 .title {
-  margin: 0;
+  margin: 0 !important;
 }
 
 .summaryText {
@@ -148,14 +148,12 @@
   color: inherit;
 }
 
-.categoryBadgeWrapper{
-  margin: 4px 0;
-}
-
 .categoryBadge {
-  padding: 4px 12px;
+  padding: 4px 8px;
   border-radius: 32px;
   color: $white-color;
+  font-size: 0.875rem;
+  line-height: 1.2;
 }
 
 @media (max-width: $breakpoint-sm) {
@@ -168,5 +166,12 @@
   .title{
     font-size: 1.125rem !important;
     line-height: 1.2 !important;
+  }
+  .categoryBadge{
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+  .categoryBadgeWrapper{
+    gap: 4px !important;
   }
 }

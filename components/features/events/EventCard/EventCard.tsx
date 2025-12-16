@@ -375,23 +375,9 @@ export function EventCard({ event, locale }: EventCardProps) {
           </Col>
           <Col xs={14} sm={18} md={20}>
             <Space direction="vertical" size="small" className={styles.contentSpace}>
-              <Title level={2} className={styles.title}>
-                {title}
-              </Title>
-              
-              <Space direction="vertical" size={4}>
-                <Text suppressHydrationWarning>
-                  <CalendarOutlined /> {formattedDate}
-                </Text>
-                
-                {[venueName, cityName].filter(Boolean).length > 0 && (
-                  <Text>
-                    <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
-                  </Text>
-                )}
-                
+              <Space direction="horizontal" size={8}>
                 {categories.length > 0 && (
-                  
+                    
                     <Space size={8} wrap className={styles.categoryBadgeWrapper}> 
                       {categoriesWithIconMeta.map(({ category, iconUrl, isSvg, name }) => {
                         const colorClass = category.color ? `bg-${category.color}` : ''
@@ -439,6 +425,21 @@ export function EventCard({ event, locale }: EventCardProps) {
                         )
                       })}
                     </Space>
+                )}
+              </Space>
+              <Title level={2} className={styles.title}>
+                {title}
+              </Title>
+              
+              <Space direction="vertical" size={4}>
+                <Text suppressHydrationWarning>
+                  <CalendarOutlined /> {formattedDate}
+                </Text>
+                
+                {[venueName, cityName].filter(Boolean).length > 0 && (
+                  <Text>
+                    <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
+                  </Text>
                 )}
               </Space>
               
