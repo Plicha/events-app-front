@@ -65,6 +65,9 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
         }
     }
   }
+  :global(.ant-ribbon){
+    z-index: 1;
+  }
 }
 
 .carouselWrapper {
