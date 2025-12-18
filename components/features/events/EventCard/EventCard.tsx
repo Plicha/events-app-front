@@ -29,6 +29,7 @@ const svgPending = new Map<string, Promise<string | null>>()
 interface EventCardProps {
   event: Event
   locale: string
+  layout?: 'horizontal' | 'vertical'
 }
 
 type CategoryIconMeta = {
@@ -316,7 +317,7 @@ function useCategoryIcons(categories: CategoryIconMeta[]) {
   return { svgByUrl, pendingSvg, failedSvg }
 }
 
-export function EventCard({ event, locale }: EventCardProps) {
+export function EventCard({ event, locale, layout = 'horizontal' }: EventCardProps) {
   const t = useTranslations('events')
   const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl)
   const categoryIconUrl = getCategoryIconUrl(event.categories)
@@ -354,114 +355,132 @@ export function EventCard({ event, locale }: EventCardProps) {
   const eventUrl = `/${locale}/events/${eventSlug}`
   const router = useRouter()
 
+  const imageSection = imageUrl ? (
+    <div
+      className={styles.imageContainer}
+      style={{ ['--bg-image' as any]: `url("${imageUrl}")` } as CSSProperties}
+    >
+      <div className={styles.foregroundImage}>
+        <Image
+          src={imageUrl}
+          alt={title}
+          fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
+          preview={false}
+        />
+      </div>
+    </div>
+  ) : (
+    <div className={styles.placeholderContainer}>
+      <TagOutlined className={styles.placeholderIcon} />
+    </div>
+  )
+
+  const contentSection = (
+    <Space direction="vertical" size="small" className={styles.contentSpace}>
+      <Space direction="horizontal" size={8}>
+        {categories.length > 0 && (
+          <Space size={8} wrap className={styles.categoryBadgeWrapper}> 
+            {categoriesWithIconMeta.map(({ category, iconUrl, isSvg, name }) => {
+              const colorClass = category.color ? `bg-${category.color}` : ''
+              const badgeClasses = [styles.categoryBadge, colorClass].filter(Boolean).join(' ')
+              
+              return (
+                <Space 
+                  key={category.id || category.slug} 
+                  size={4} 
+                  align="center"
+                  className={badgeClasses}
+                >
+                  {iconUrl && (
+                    <>
+                      {isSvg
+                        ? svgByUrl[iconUrl]
+                          ? (
+                            <span
+                              className={styles.categoryIconWrap}
+                              dangerouslySetInnerHTML={{ __html: svgByUrl[iconUrl] }}
+                            />
+                          )
+                          : pendingSvg[iconUrl]
+                            ? <LoadingOutlined className={styles.categoryIconSpin} />
+                            : failedSvg[iconUrl]
+                            ? (
+                              <img
+                                src={iconUrl}
+                                alt="icon"
+                                className={styles.categoryIcon}
+                              />
+                            )
+                            : null
+                        : (
+                          <img
+                            src={iconUrl}
+                            alt="icon"
+                            className={styles.categoryIcon}
+                          />
+                        )}
+                    </>
+                  )}
+                  <span>{name}</span>
+                </Space>
+              )
+            })}
+          </Space>
+        )}
+      </Space>
+      <Title level={2} className={styles.title}>
+        {title}
+      </Title>
+      
+      <Space direction="vertical" size={4}>
+        <Text suppressHydrationWarning>
+          <CalendarOutlined /> {formattedDate}
+        </Text>
+        
+        {[venueName, cityName].filter(Boolean).length > 0 && (
+          <Text>
+            <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
+          </Text>
+        )}
+      </Space>
+      
+      {truncatedSummary && (
+        <Text type="secondary" className={styles.summaryText}>
+          {truncatedSummary}
+        </Text>
+      )}
+      <div className={styles.viewDetailsButtonWrapper}>
+        <Link href={eventUrl}>
+          <Button type="primary">{t('viewDetails')}</Button>
+        </Link>
+      </div>
+    </Space>
+  )
+
+  const cardClassName = layout === 'vertical' 
+    ? `${styles.card} ${styles.verticalLayout}`
+    : styles.card
+
   const cardContent = (
-    <Card className={styles.card} onClick={() => router.push(eventUrl)}>
+    <Card className={cardClassName} onClick={() => router.push(eventUrl)}>
+      {layout === 'vertical' ? (
+        <>
+          {imageSection}
+          <div className={styles.verticalContentWrapper}>
+            {contentSection}
+          </div>
+        </>
+      ) : (
         <Row gutter={[16, 16]}>
           <Col xs={10} sm={6} md={4}>
-            {imageUrl ? (
-              <div
-                className={styles.imageContainer}
-                style={{ ['--bg-image' as any]: `url("${imageUrl}")` } as CSSProperties}
-              >
-                <div className={styles.foregroundImage}>
-                  <Image
-                    src={imageUrl}
-                    alt={title}
-                    fallback="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CcmFrIG9icmF6dTwvdGV4dD48L3N2Zz4="
-                    preview={false}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className={styles.placeholderContainer}>
-                <TagOutlined className={styles.placeholderIcon} />
-              </div>
-            )}
+            {imageSection}
           </Col>
           <Col xs={14} sm={18} md={20}>
-            <Space direction="vertical" size="small" className={styles.contentSpace}>
-              <Space direction="horizontal" size={8}>
-                {categories.length > 0 && (
-                    
-                    <Space size={8} wrap className={styles.categoryBadgeWrapper}> 
-                      {categoriesWithIconMeta.map(({ category, iconUrl, isSvg, name }) => {
-                        const colorClass = category.color ? `bg-${category.color}` : ''
-                        const badgeClasses = [styles.categoryBadge, colorClass].filter(Boolean).join(' ')
-                        
-                        return (
-                          <Space 
-                            key={category.id || category.slug} 
-                            size={4} 
-                            align="center"
-                            className={badgeClasses}
-                          >
-                            {iconUrl && (
-                              <>
-                                {isSvg
-                                  ? svgByUrl[iconUrl]
-                                    ? (
-                                      <span
-                                        className={styles.categoryIconWrap}
-                                        dangerouslySetInnerHTML={{ __html: svgByUrl[iconUrl] }}
-                                      />
-                                    )
-                                    : pendingSvg[iconUrl]
-                                      ? <LoadingOutlined className={styles.categoryIconSpin} />
-                                      : failedSvg[iconUrl]
-                                      ? (
-                                        <img
-                                          src={iconUrl}
-                                          alt="icon"
-                                          className={styles.categoryIcon}
-                                        />
-                                      )
-                                      : null
-                                  : (
-                                    <img
-                                      src={iconUrl}
-                                      alt="icon"
-                                      className={styles.categoryIcon}
-                                    />
-                                  )}
-                              </>
-                            )}
-                            <span>{name}</span>
-                          </Space>
-                        )
-                      })}
-                    </Space>
-                )}
-              </Space>
-              <Title level={2} className={styles.title}>
-                {title}
-              </Title>
-              
-              <Space direction="vertical" size={4}>
-                <Text suppressHydrationWarning>
-                  <CalendarOutlined /> {formattedDate}
-                </Text>
-                
-                {[venueName, cityName].filter(Boolean).length > 0 && (
-                  <Text>
-                    <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
-                  </Text>
-                )}
-              </Space>
-              
-              {truncatedSummary && (
-                <Text type="secondary" className={styles.summaryText}>
-                  {truncatedSummary}
-                </Text>
-              )}
-              <div className={styles.viewDetailsButtonWrapper}>
-                <Link href={eventUrl}>
-                  <Button type="primary">{t('viewDetails')}</Button>
-                </Link>
-              </div>
-            </Space>
+            {contentSection}
           </Col>
         </Row>
-      </Card>
+      )}
+    </Card>
   )
 
   if (event.isPromoted) {

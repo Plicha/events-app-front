@@ -11,6 +11,8 @@ import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Row } from 'antd'
 import { Suspense } from 'react'
 import { IntroSection } from '@/components/features/homepage/IntroSection/IntroSection'
+import { RecommendedEventsSection } from '@/components/features/homepage/RecommendedEventsSection/RecommendedEventsSection'
+import { RecommendedEventsSectionSkeleton } from '@/components/features/homepage/RecommendedEventsSection/RecommendedEventsSectionSkeleton'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -130,8 +132,8 @@ export default async function Home({
           )}
           {!homepageSettings.headline && <h1>{tCommon('title')}</h1>}
           {homepageSettings.headline && <br />}
-          <Suspense fallback={<div>Loading events...</div>}>
-            <EventsList events={events} locale={locale} />
+          <Suspense fallback={<RecommendedEventsSectionSkeleton />}>
+            <RecommendedEventsSection locale={locale} />
           </Suspense>
           {events.length > 0 && (
             <Row justify="center" style={{ marginTop: 16 }}>
