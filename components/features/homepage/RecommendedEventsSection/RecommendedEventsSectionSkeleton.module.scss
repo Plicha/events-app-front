@@ -1,0 +1,40 @@
+@import '@/styles/variables.scss';
+
+.skeletonContainer {
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.skeletonCard {
+  flex: 0 0 calc(83.33% - 8px);
+  min-width: 0;
+  display: block;
+
+  @media (min-width: $breakpoint-xs) {
+    flex: 0 0 calc(50% - 8px);
+    display: block;
+    
+    &:nth-child(n+3) {
+      display: none;
+    }
+  }
+
+  @media (min-width: $breakpoint-sm) {
+    flex: 0 0 calc(33.33% - 11px);
+    
+    &:nth-child(n+4) {
+      display: none;
+    }
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    flex: 0 0 calc(25% - 12px);
+    
+    &:nth-child(n+1) {
+      display: block;
+    }
+  }
+}
+
