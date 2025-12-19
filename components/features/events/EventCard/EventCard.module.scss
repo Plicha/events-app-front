@@ -17,6 +17,9 @@
     }
   }
 }
+.promotedRibbon{
+  z-index: 1;
+}
 
 .verticalContentWrapper {
   padding: 16px;
@@ -210,5 +213,8 @@
   }
   .categoryBadgeWrapper{
     gap: 4px !important;
+    & > div:first-child{
+      flex: 0 0 100%;
+    }
   }
 }
