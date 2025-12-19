@@ -91,6 +91,9 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
     @media (max-width: #{$breakpoint-lg - 1px}) {
       padding: 8px;
     }
+    @media (max-width: #{$breakpoint-xs - 1px}) {
+      padding: 8px 72px 8px 8px;
+    }
   }
   
   
@@ -123,10 +126,6 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
       :global(.swiper-slide) {
         width: calc(100% / #{$slides-per-view-mobile}) !important;
         margin-right: $slide-spacing-mobile !important;
-
-        &:last-child {
-          padding-right: 56px;
-        }
       }
     }
   }
