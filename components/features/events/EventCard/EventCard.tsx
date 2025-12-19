@@ -485,7 +485,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
 
   if (event.isPromoted) {
     return (
-      <Badge.Ribbon text={t('promoted')} color="red">
+      <Badge.Ribbon text={t('promoted')} color="red" className={styles.promotedRibbon}>
         {cardContent}
       </Badge.Ribbon>
     )
