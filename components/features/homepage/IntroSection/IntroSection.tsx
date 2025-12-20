@@ -1,74 +1,47 @@
-'use client'
-
-import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { Input, Button, Card, Space } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
 import styles from './IntroSection.module.scss'
+import { SearchBar } from '@/components/features/events/EventFilters/SearchBar'
 
 interface IntroSectionProps {
   headline: string
-  backgroundImageUrl: string | null
-  backgroundImageAlt: string
   locale: string
+  searchPlaceholder: string
+  subheadline?: string
 }
 
 export function IntroSection({
   headline,
-  backgroundImageUrl,
-  backgroundImageAlt,
   locale,
+  searchPlaceholder,
+  subheadline,
 }: IntroSectionProps) {
-  const router = useRouter()
-  const t = useTranslations('events')
-  const [searchValue, setSearchValue] = useState('')
-
-  const handleSearch = (e?: FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLInputElement>) => {
-    if (e) {
-      e.preventDefault()
-    }
-    if (searchValue.trim()) {
-      router.push(`/${locale}/events?search=${encodeURIComponent(searchValue.trim())}`)
-    } else {
-      router.push(`/${locale}/events`)
-    }
-  }
-
   return (
     <section className={styles.introSection}>
-        {backgroundImageUrl && (
-            <img
-              src={backgroundImageUrl}
-              alt={backgroundImageAlt}
-              className={styles.backgroundImage}
-            />
-          )}
-          <div className={styles.content}>
-            {headline && <h1 className={styles.headline}>{headline}</h1>}
-            <form onSubmit={handleSearch} className={styles.searchForm}>
-              <Space.Compact style={{ width: '100%', maxWidth: '400px' }}>
-                <Input
-                  size="large"
-                  placeholder={t('searchPlaceholder')}
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch(e)
-                    }
-                  }}
-                  allowClear
-                />
-                <Button
-                  size="large"
-                  type="primary"
-                  htmlType="submit"
-                  icon={<SearchOutlined />}
-                />
-              </Space.Compact>
-            </form>
-          </div>
+      <div className={styles.animatedGradient} aria-hidden="true" />
+      <div className={styles.overlay} aria-hidden="true" />
+
+      <div className={styles.content}>
+        <div className={styles.textBlock}>
+          {headline && <h1 className={styles.headline}>{headline}</h1>}
+          {subheadline && <p className={styles.subheadline}>{subheadline}</p>}
+        </div>
+
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            placeholder={searchPlaceholder}
+            targetPathname={`/${locale}/events`}
+            behavior="submit"
+          />
+        </div>
+      </div>
+
+      <div className={styles.bottomWave} aria-hidden="true">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className={styles.waveSvg}>
+          <path
+            d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
+            className={styles.wavePath}
+          />
+        </svg>
+      </div>
     </section>
   )
 }

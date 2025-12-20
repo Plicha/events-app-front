@@ -8,12 +8,22 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import debounce from 'lodash.debounce'
 import { useTranslations } from 'next-intl'
 
-function SearchBarContent() {
+function SearchBarContent({
+  placeholder,
+  targetPathname,
+  behavior = 'live',
+}: {
+  placeholder?: string
+  targetPathname?: string
+  behavior?: 'live' | 'submit'
+}) {
   const t = useTranslations('events')
   const searchParams = useSearchParams()
   const router = useRouter()
-  const pathname = usePathname()
+  const currentPathname = usePathname()
+  const pathname = targetPathname || currentPathname
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
+  const effectivePlaceholder = placeholder || t('searchPlaceholder')
 
   const updateSearchInParams = (params: URLSearchParams, value: string) => {
     params.delete('page')
@@ -30,11 +40,11 @@ function SearchBarContent() {
 
   const debouncedSearch = useMemo(
     () => debounce((value: string) => {
-      const params = new URLSearchParams(window.location.search)
+      const params = new URLSearchParams(searchParams.toString())
       updateSearchInParams(params, value)
       router.push(`${pathname}?${params.toString()}`)
     }, 300),
-    [pathname, router]
+    [pathname, router, searchParams]
   )
 
   useEffect(() => {
@@ -53,7 +63,9 @@ function SearchBarContent() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setSearchValue(value)
-    debouncedSearch(value)
+    if (behavior === 'live') {
+      debouncedSearch(value)
+    }
   }
 
   const handleSearch = () => {
@@ -72,7 +84,7 @@ function SearchBarContent() {
       <Input
         id='search-bar'
         size="large"
-        placeholder={t('searchPlaceholder')}
+        placeholder={effectivePlaceholder}
         value={searchValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -90,9 +102,11 @@ function SearchBarContent() {
 
 interface SearchBarProps {
   placeholder: string
+  targetPathname?: string
+  behavior?: 'live' | 'submit'
 }
 
-export function SearchBar({ placeholder }: SearchBarProps) {
+export function SearchBar({ placeholder, targetPathname, behavior = 'live' }: SearchBarProps) {
   return (
     <Suspense fallback={
       <Space.Compact style={{ width: '100%' }}>
@@ -100,7 +114,7 @@ export function SearchBar({ placeholder }: SearchBarProps) {
         <Button size="large" type="primary" icon={<SearchOutlined />} disabled />
       </Space.Compact>
     }>
-      <SearchBarContent />
+      <SearchBarContent placeholder={placeholder} targetPathname={targetPathname} behavior={behavior} />
     </Suspense>
   )
 }

@@ -120,16 +120,15 @@ export default async function Home({
 
   return (
     <>
-      <main className="default-padding-y">
-        <div className="container">
+      <main className="default-padding-y" style={{ paddingTop: '0' }}>
           {(homepageSettings.headline || homepageSettings.backgroundImage) && (
             <IntroSection
               headline={homepageSettings.headline}
-              backgroundImageUrl={homepageSettings.backgroundImage?.url || null}
-              backgroundImageAlt={homepageSettings.backgroundImage?.alt || ''}
               locale={locale}
+              searchPlaceholder={tEvents('searchPlaceholder')}
             />
           )}
+        <div className="container">
           {!homepageSettings.headline && <h1>{tCommon('title')}</h1>}
           {homepageSettings.headline && <br />}
           <Suspense fallback={<RecommendedEventsSectionSkeleton />}>
