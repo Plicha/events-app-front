@@ -18,7 +18,7 @@ import {
 import { getLocalizedText } from '@/lib/utils/richText'
 import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
-import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
+import { StaticBreadcrumb } from '@/components/layout'
 import { routing } from '@/lib/i18n/routing'
 
 export const revalidate = 300

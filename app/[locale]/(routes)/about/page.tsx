@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
-import { InDevelopmentPage } from '@/components/features/placeholder/InDevelopmentPage'
+import { InDevelopmentPage } from '@/components/features/placeholder'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({

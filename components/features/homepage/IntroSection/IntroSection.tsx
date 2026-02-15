@@ -1,6 +1,6 @@
 import styles from './IntroSection.module.scss'
 import { getPathname } from '@/lib/i18n/routing'
-import { SearchBar } from '@/components/features/events/EventFilters/SearchBar'
+import { SearchBar } from '@/components/features/events'
 
 interface IntroSectionProps {
   headline: string

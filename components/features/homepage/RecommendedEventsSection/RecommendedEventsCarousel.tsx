@@ -9,7 +9,7 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import type { Event } from '@/types'
-import { EventCard } from '@/components/features/events/EventCard/EventCard'
+import { EventCard } from '@/components/features/events'
 import styles from './RecommendedEventsSection.module.scss'
 
 interface RecommendedEventsCarouselProps {
