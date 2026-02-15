@@ -3,7 +3,7 @@
 import '@/lib/antd-patch'
 import { Card, Badge, Typography, Button, Row, Col, Image, Space } from 'antd'
 import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LoadingOutlined } from '@ant-design/icons'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import type { CSSProperties } from 'react'
@@ -15,7 +15,7 @@ import timezone from 'dayjs/plugin/timezone'
 import 'dayjs/locale/pl'
 import 'dayjs/locale/en'
 import styles from './EventCard.module.scss'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/routing'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -352,7 +352,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
   const cityName = getCityName(event.city, locale)
   const venueName = getVenueName(event.venue, locale)
   const eventSlug = getEventSlug(event)
-  const eventUrl = `/${locale}/events/${eventSlug}`
+  const eventHref = { pathname: '/events/[slug]' as const, params: { slug: eventSlug } }
   const router = useRouter()
 
   const imageSection = imageUrl ? (
@@ -450,7 +450,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
         </Text>
       )}
       <div className={styles.viewDetailsButtonWrapper}>
-        <Link href={eventUrl}>
+        <Link href={eventHref}>
           <Button type="primary">{t('viewDetails')}</Button>
         </Link>
       </div>
@@ -462,7 +462,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
     : styles.card
 
   const cardContent = (
-    <Card className={cardClassName} onClick={() => router.push(eventUrl)}>
+    <Card className={cardClassName} onClick={() => router.push(eventHref)}>
       {layout === 'vertical' ? (
         <>
           {imageSection}

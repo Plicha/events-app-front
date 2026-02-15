@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { Result, Button, Row } from 'antd'
 import { ToolOutlined } from '@ant-design/icons'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/routing'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({
@@ -31,7 +31,7 @@ export default async function AboutPage({
           subTitle={tCommon('inDevelopmentDescription')}
           extra={
             <Row justify="center">
-              <Link href={`/${locale}/events`}>
+              <Link href="/events">
                 <Button type="primary" size="large">
                   {tEvents('viewAllEvents')}
                 </Button>

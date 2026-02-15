@@ -19,7 +19,7 @@ import { getLocalizedText } from '@/lib/utils/richText'
 import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
 import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
-import { routing, Link as IntlLink } from '@/lib/i18n/routing'
+import { routing } from '@/lib/i18n/routing'
 
 export const revalidate = 300
 
@@ -105,8 +105,6 @@ export default async function EventDetailsPage({
   const venueAddress = venue?.address || ''
   const categoriesText = getCategoriesText(event.categories, locale)
 
-  const eventsPath = locale === 'pl' ? '/wydarzenia' : '/events'
-
   const breadcrumbItems = [
     {
       href: '/',
@@ -114,7 +112,7 @@ export default async function EventDetailsPage({
       icon: <HomeOutlined />
     },
     {
-      href: eventsPath,
+      href: '/events',
       title: t('breadcrumb.events'),
       icon: <CalendarOutlined />
     },

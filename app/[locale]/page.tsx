@@ -6,7 +6,7 @@ import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import { BackendError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { Button } from 'antd'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/routing'
 import { getTodayDateString } from '@/lib/utils/date'
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Row } from 'antd'
@@ -115,7 +115,7 @@ export default async function Home({
           </Suspense>
           {events.length > 0 && (
             <Row justify="center" style={{ marginTop: 16 }}>
-              <Link href={`/${locale}/events`}>
+              <Link href="/events">
                 <Button type="primary" size="large">
                   {tEvents('viewAllEvents')}
                 </Button>
