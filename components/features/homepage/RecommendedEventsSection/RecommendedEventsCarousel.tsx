@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper'
@@ -17,6 +18,7 @@ interface RecommendedEventsCarouselProps {
 }
 
 export function RecommendedEventsCarousel({ events, locale }: RecommendedEventsCarouselProps) {
+  const t = useTranslations('events')
   const swiperRef = useRef<SwiperType | null>(null)
   const [isBeginning, setIsBeginning] = useState(true)
   const [isEnd, setIsEnd] = useState(false)
@@ -37,7 +39,7 @@ export function RecommendedEventsCarousel({ events, locale }: RecommendedEventsC
       <button
         className={styles.navButtonPrev}
         onClick={() => swiperRef.current?.slidePrev()}
-        aria-label="Previous slide"
+        aria-label={t('carousel.prevSlide')}
         disabled={isBeginning}
       >
         <LeftOutlined />
@@ -86,7 +88,7 @@ export function RecommendedEventsCarousel({ events, locale }: RecommendedEventsC
       <button
         className={styles.navButtonNext}
         onClick={() => swiperRef.current?.slideNext()}
-        aria-label="Next slide"
+        aria-label={t('carousel.nextSlide')}
         disabled={isEnd}
       >
         <RightOutlined />
@@ -95,7 +97,7 @@ export function RecommendedEventsCarousel({ events, locale }: RecommendedEventsC
         <button
           className={styles.navButtonPrevMobile}
           onClick={() => swiperRef.current?.slidePrev()}
-          aria-label="Previous slide"
+          aria-label={t('carousel.prevSlide')}
           disabled={isBeginning}
         >
           <LeftOutlined />
@@ -103,7 +105,7 @@ export function RecommendedEventsCarousel({ events, locale }: RecommendedEventsC
         <button
           className={styles.navButtonNextMobile}
           onClick={() => swiperRef.current?.slideNext()}
-          aria-label="Next slide"
+          aria-label={t('carousel.nextSlide')}
           disabled={isEnd}
         >
           <RightOutlined />
