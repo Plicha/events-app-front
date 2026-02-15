@@ -315,7 +315,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
         </Text>
         
         {[venueName, cityName].filter(Boolean).length > 0 && (
-          <Text>
+          <Text className={styles.venueText}>
             <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
           </Text>
         )}

@@ -10,10 +10,6 @@
   &.verticalLayout {
     :global(.ant-card-body) {
       padding: 0 !important;
-      height: calc(100% - 250px);
-      @media (max-width: $breakpoint-sm) {
-        height: calc(100% - 200px);
-      }
     }
   }
 }
@@ -134,14 +130,40 @@
 
 .title {
   margin: 0 !important;
+  font-size: 1.5rem !important;
+  line-height: 1.4 !important;
+
+  .verticalLayout & {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    min-height: 2.8em;
+  }
 }
 
 .summaryText {
   display: block;
+
+  .verticalLayout & {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
-.title{
-  font-size: 1.5rem !important;
-  line-height: 1.4 !important;
+
+.venueText {
+  .verticalLayout & {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 .viewDetailsButtonWrapper {
@@ -197,15 +219,20 @@
 }
 
 @media (max-width: $breakpoint-sm) {
-  .summaryText{
-    display: none;
+  .summaryText,
+  .verticalLayout .summaryText {
+    display: none !important;
   }
-  .imageContainer{
+  .imageContainer {
     height: 140px;
   }
-  .title{
+  .title {
     font-size: 1.125rem !important;
     line-height: 1.2 !important;
+
+    .verticalLayout & {
+      min-height: 2.4em;
+    }
   }
   .categoryBadge{
     font-size: 0.75rem;

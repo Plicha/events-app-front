@@ -223,7 +223,7 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
   height: auto;
   display: flex;
   box-sizing: border-box;
-  
+
   :global(.ant-card), :global(.ant-ribbon-wrapper) {
     height: 100%;
     width: 100%;
