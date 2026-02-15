@@ -1,24 +1,19 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
+import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import { BackendError } from '@/lib/api/errors'
 import type { ApiResponse, Event } from '@/types'
 import { notFound } from 'next/navigation'
 import { Row, Col } from 'antd'
 import { HomeOutlined, CalendarOutlined } from '@ant-design/icons'
 import { getTodayDateString } from '@/lib/utils/date'
-import { EventFilters } from '@/components/features/events/EventFilters/EventFilters'
-import { EventsPagination } from '@/components/features/events/EventsPagination/EventsPagination'
-import { PageSizeSelector } from '@/components/features/events/EventFilters/PageSizeSelector'
-import { SortSelector } from '@/components/features/events/EventFilters/SortSelector'
-import { EventsList } from '@/components/features/events/EventsList/EventsList'
+import { EventFilters, EventsPagination, PageSizeSelector, SortSelector, EventsList } from '@/components/features/events'
 import { Suspense } from 'react'
-import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
+import { StaticBreadcrumb } from '@/components/layout'
+import styles from './page.module.scss'
 
 export const revalidate = 300
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-const COUNTY_ID = process.env.NEXT_PUBLIC_COUNTY_ID
 
 type EventsPageSearchParams = {
   search?: string
@@ -74,11 +69,8 @@ export default async function EventsPage({
   let paginationData: { current: number; total: number; pageSize: number } | null = null
 
   try {
-    const apiClient = new ApiClient(API_BASE_URL)
-    const headers: Record<string, string> = {
-      'x-locale': locale,
-      ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
-    }
+    const apiClient = new ApiClient(getApiBaseUrl())
+    const headers = createApiHeaders(locale)
 
     const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
       params: apiParams,
@@ -121,7 +113,7 @@ export default async function EventsPage({
         <h1 className="title">{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />
-        <Row style={{ marginTop: 16 }} justify="space-between" gutter={[16, 8]}>
+        <Row className={styles.filtersRow} justify="space-between" gutter={[16, 8]}>
           <Col xs={12} sm={12} md={4}>
             <PageSizeSelector locale={locale} currentPageSize={paginationData?.pageSize || 20} />
           </Col>

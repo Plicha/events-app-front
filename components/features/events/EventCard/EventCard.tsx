@@ -3,19 +3,28 @@
 import '@/lib/antd-patch'
 import { Card, Badge, Typography, Button, Row, Col, Image, Space } from 'antd'
 import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LoadingOutlined } from '@ant-design/icons'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import type { CSSProperties } from 'react'
 import type { Event, Category } from '@/types'
 import { extractTextFromRichText, truncateText, getLocalizedText } from '@/lib/utils/richText'
+import {
+  getEventCoverUrl,
+  getCategoryIconUrl,
+  getSingleCategoryIconUrl,
+  getCategoryName,
+  getCityName,
+  getVenueName,
+  isSvgIcon,
+} from '@/lib/utils/eventHelpers'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import 'dayjs/locale/pl'
 import 'dayjs/locale/en'
 import styles from './EventCard.module.scss'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/routing'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -54,105 +63,7 @@ function formatEventDate(dateString: string, locale: string): string {
   return date.format('DD.MM.YYYY, HH:mm')
 }
 
-function buildMediaUrl(urlOrPath: string): string {
-  if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
-    return urlOrPath
-  }
-
-  if (urlOrPath.startsWith('/api/')) {
-    return urlOrPath
-  }
-
-  if (urlOrPath.startsWith('/')) {
-    return `/api${urlOrPath}`
-  }
-
-  return `/api/${urlOrPath}`
-}
-
-function getEventCoverUrl(cover: Event['cover'], hostImageUrl?: string): string | null {
-  if (!cover) {
-    return hostImageUrl || null
-  }
-
-  if (typeof cover === 'string') {
-    const isUrl = cover.startsWith('http://') || cover.startsWith('https://') || cover.startsWith('/')
-    return isUrl ? cover : hostImageUrl || null
-  }
-
-  if (typeof cover !== 'object') {
-    return hostImageUrl || null
-  }
-
-  const coverObj = cover as any
-
-  return coverObj.url
-    ? buildMediaUrl(coverObj.url)
-    : coverObj.filename
-    ? buildMediaUrl(`/api/media/file/${coverObj.filename}`)
-    : coverObj.id
-    ? buildMediaUrl(`/api/media/${coverObj.id}`)
-    : hostImageUrl || null
-}
-
-function getCategoryIconUrl(categories: Event['categories']): string | null {
-  if (!categories || !Array.isArray(categories) || categories.length === 0) {
-    return null
-  }
-
-  const firstCategory = categories[0]
-  if (!firstCategory || typeof firstCategory !== 'object') {
-    return null
-  }
-
-  const icon = (firstCategory as any).icon
-  if (!icon) {
-    return null
-  }
-
-  if (typeof icon === 'string') {
-    return buildMediaUrl(icon)
-  }
-
-  if (typeof icon === 'object') {
-    const iconObj = icon as any
-    return iconObj.url
-      ? buildMediaUrl(iconObj.url)
-      : iconObj.filename
-      ? buildMediaUrl(`/api/media/file/${iconObj.filename}`)
-      : iconObj.id
-      ? buildMediaUrl(`/api/media/${iconObj.id}`)
-      : null
-  }
-
-  return null
-}
-
-function getSingleCategoryIconUrl(category: Category): string | null {
-  const icon = (category as any).icon
-  if (!icon) return null
-  if (typeof icon === 'string') return buildMediaUrl(icon)
-  if (typeof icon === 'object') {
-    const iconObj = icon as any
-    return iconObj.url
-      ? buildMediaUrl(iconObj.url)
-      : iconObj.filename
-      ? buildMediaUrl(`/api/media/file/${iconObj.filename}`)
-      : iconObj.id
-      ? buildMediaUrl(`/api/media/${iconObj.id}`)
-      : null
-  }
-  return null
-}
-
-function isSvgIcon(category: Category): boolean {
-  const icon = (category as any).icon
-  if (!icon || typeof icon === 'string') return false
-  if (typeof icon === 'object') {
-    return icon.mimeType === 'image/svg+xml' || (icon.url?.toLowerCase().endsWith('.svg') ?? false)
-  }
-  return false
-}
+const frontendMediaOptions = { useFrontendProxy: true } as const
 
 function sanitizeSvg(raw: string): string {
   try {
@@ -182,40 +93,6 @@ function sanitizeSvg(raw: string): string {
   } catch {
     return ''
   }
-}
-
-function getCategoryName(category: Category, locale: string): string {
-  if (typeof category.name === 'string') {
-    return category.name
-  }
-  const localizedName = category.name[locale as 'pl' | 'en'] || category.name.pl || category.name.en
-  return localizedName || ''
-}
-
-function getCityName(city: Event['city'], locale: string): string {
-  if (typeof city === 'string' || !city) {
-    return ''
-  }
-
-  if (typeof city.name === 'string') {
-    return city.name
-  }
-
-  const localizedName = city.name[locale as 'pl' | 'en'] || city.name.pl || city.name.en
-  return localizedName || ''
-}
-
-function getVenueName(venue: Event['venue'], locale: string): string {
-  if (!venue || typeof venue === 'string') {
-    return ''
-  }
-
-  if (typeof venue.name === 'string') {
-    return venue.name
-  }
-
-  const localizedName = venue.name[locale as 'pl' | 'en'] || venue.name.pl || venue.name.en
-  return localizedName || ''
 }
 
 function getEventSlug(event: Event): string {
@@ -319,8 +196,8 @@ function useCategoryIcons(categories: CategoryIconMeta[]) {
 
 export function EventCard({ event, locale, layout = 'horizontal' }: EventCardProps) {
   const t = useTranslations('events')
-  const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl)
-  const categoryIconUrl = getCategoryIconUrl(event.categories)
+  const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl, frontendMediaOptions)
+  const categoryIconUrl = getCategoryIconUrl(event.categories, frontendMediaOptions)
   const imageUrl = coverUrl || categoryIconUrl
   const categories = useMemo(
     () =>
@@ -334,7 +211,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
     () =>
       categories.map((category) => ({
         category,
-        iconUrl: getSingleCategoryIconUrl(category),
+        iconUrl: getSingleCategoryIconUrl(category, frontendMediaOptions),
         isSvg: isSvgIcon(category),
         name: getCategoryName(category, locale)
       })),
@@ -352,7 +229,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
   const cityName = getCityName(event.city, locale)
   const venueName = getVenueName(event.venue, locale)
   const eventSlug = getEventSlug(event)
-  const eventUrl = `/${locale}/events/${eventSlug}`
+  const eventHref = { pathname: '/events/[slug]' as const, params: { slug: eventSlug } }
   const router = useRouter()
 
   const imageSection = imageUrl ? (
@@ -450,7 +327,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
         </Text>
       )}
       <div className={styles.viewDetailsButtonWrapper}>
-        <Link href={eventUrl}>
+        <Link href={eventHref}>
           <Button type="primary">{t('viewDetails')}</Button>
         </Link>
       </div>
@@ -462,7 +339,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
     : styles.card
 
   const cardContent = (
-    <Card className={cardClassName} onClick={() => router.push(eventUrl)}>
+    <Card className={cardClassName} onClick={() => router.push(eventHref)}>
       {layout === 'vertical' ? (
         <>
           {imageSection}

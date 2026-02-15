@@ -1,5 +1,6 @@
 import styles from './IntroSection.module.scss'
-import { SearchBar } from '@/components/features/events/EventFilters/SearchBar'
+import { getPathname } from '@/lib/i18n/routing'
+import { SearchBar } from '@/components/features/events'
 
 interface IntroSectionProps {
   headline: string
@@ -28,7 +29,7 @@ export function IntroSection({
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder={searchPlaceholder}
-            targetPathname={`/${locale}/events`}
+            targetPathname={getPathname({ locale, href: '/events' })}
             behavior="submit"
           />
         </div>

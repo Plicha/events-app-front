@@ -1,5 +1,16 @@
 @import '@/styles/variables.scss';
 
+.section {
+  margin-bottom: 48px;
+  min-height: 550px;
+}
+
+.sectionTitle {
+  margin-bottom: 24px;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 // Carousel variables
 $carousel-container-extension: 112px;
 $carousel-container-margin: 56px;

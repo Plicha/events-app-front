@@ -5,7 +5,8 @@ import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
 import { routing } from '@/lib/i18n/routing'
-import { Header } from '@/components/layout/Header/Header'
+import { getMessages } from '@/lib/i18n/messages'
+import { Header } from '@/components/layout'
 import plPL from 'antd/locale/pl_PL'
 import enUS from 'antd/locale/en_US'
 import '@/styles/globals.scss'
@@ -29,7 +30,7 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale)
-  const messages = (await import(`../../messages/${locale}.json`)).default
+  const messages = await getMessages(locale)
 
   return (
     <html lang={locale} suppressHydrationWarning>

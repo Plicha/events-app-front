@@ -25,8 +25,8 @@ export function EventsPagination({ current, total, pageSize, locale }: EventsPag
     router.refresh()
   }
 
-  const showTotal = (total: number, range: [number, number]) => {
-    return `${range[0]}-${range[1]} z ${total} wydarzeń`
+  const showTotal = (_total: number, range: [number, number]) => {
+    return t('pagination.showTotal', { from: range[0], to: range[1], total: _total })
   }
 
   if (total === 0) {

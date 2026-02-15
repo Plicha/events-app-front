@@ -2,9 +2,12 @@ import { ReactNode } from 'react'
 import styles from './Breadcrumb.module.scss'
 import { Link } from '@/lib/i18n/routing'
 
+type LinkHref = React.ComponentProps<typeof Link>['href']
+
 export interface BreadcrumbItem {
   title: ReactNode
-  href?: string | { pathname: string }
+  /** Use pathnames from routing: '/', '/events', '/about', '/contact', or { pathname: '/events/[slug]', params: { slug } } */
+  href?: LinkHref | string | { pathname: string; params?: Record<string, string> }
   icon?: ReactNode
 }
 
@@ -34,7 +37,7 @@ export function StaticBreadcrumb({ items, className }: StaticBreadcrumbProps) {
                 <span className={styles.breadcrumbCurrent}>{content}</span>
               ) : (
                 <Link 
-                  href={typeof item.href === 'string' ? item.href as any : item.href} 
+                  href={item.href as LinkHref}
                   className={styles.breadcrumbLink}
                 >
                   {content}

@@ -30,14 +30,31 @@ export function buildMediaUrl(urlOrPath: string): string {
   return `${backendBaseUrl}${normalizedPath}`
 }
 
-export function getEventCoverUrl(cover: Event['cover'], hostImageUrl?: string): string | null {
+/** Builds media URL for browser (uses frontend /api proxy) */
+export function buildFrontendMediaUrl(urlOrPath: string): string {
+  if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
+    return urlOrPath
+  }
+  if (urlOrPath.startsWith('/api/')) {
+    return urlOrPath
+  }
+  if (urlOrPath.startsWith('/')) {
+    return `/api${urlOrPath}`
+  }
+  return `/api/${urlOrPath}`
+}
+
+export function getEventCoverUrl(cover: Event['cover'], hostImageUrl?: string, options?: { useFrontendProxy?: boolean }): string | null {
+  const buildUrl = options?.useFrontendProxy ? buildFrontendMediaUrl : buildMediaUrl
+
   if (!cover) {
     return hostImageUrl || null
   }
 
   if (typeof cover === 'string') {
     const isUrl = cover.startsWith('http://') || cover.startsWith('https://') || cover.startsWith('/')
-    return isUrl ? cover : hostImageUrl || null
+    if (isUrl) return options?.useFrontendProxy ? buildFrontendMediaUrl(cover) : cover
+    return hostImageUrl || null
   }
 
   if (typeof cover !== 'object') {
@@ -47,15 +64,17 @@ export function getEventCoverUrl(cover: Event['cover'], hostImageUrl?: string): 
   const coverObj = cover as any
 
   return coverObj.url
-    ? buildMediaUrl(coverObj.url)
+    ? buildUrl(coverObj.url)
     : coverObj.filename
-    ? buildMediaUrl(`/api/media/file/${coverObj.filename}`)
+    ? buildUrl(`/api/media/file/${coverObj.filename}`)
     : coverObj.id
-    ? buildMediaUrl(`/api/media/${coverObj.id}`)
+    ? buildUrl(`/api/media/${coverObj.id}`)
     : hostImageUrl || null
 }
 
-export function getCategoryIconUrl(categories: Event['categories']): string | null {
+export function getCategoryIconUrl(categories: Event['categories'], options?: { useFrontendProxy?: boolean }): string | null {
+  const buildUrl = options?.useFrontendProxy ? buildFrontendMediaUrl : buildMediaUrl
+
   if (!categories || !Array.isArray(categories) || categories.length === 0) {
     return null
   }
@@ -71,20 +90,47 @@ export function getCategoryIconUrl(categories: Event['categories']): string | nu
   }
 
   if (typeof icon === 'string') {
-    return buildMediaUrl(icon)
+    return buildUrl(icon)
   }
 
   if (typeof icon === 'object') {
     const iconObj = icon as any
     return iconObj.url
-      ? buildMediaUrl(iconObj.url)
+      ? buildUrl(iconObj.url)
       : iconObj.filename
-      ? buildMediaUrl(`/api/media/file/${iconObj.filename}`)
+      ? buildUrl(`/api/media/file/${iconObj.filename}`)
       : iconObj.id
-      ? buildMediaUrl(`/api/media/${iconObj.id}`)
+      ? buildUrl(`/api/media/${iconObj.id}`)
       : null
   }
 
+  return null
+}
+
+export function isSvgIcon(category: Category): boolean {
+  const icon = (category as any).icon
+  if (!icon || typeof icon === 'string') return false
+  if (typeof icon === 'object') {
+    return icon.mimeType === 'image/svg+xml' || (icon.url?.toLowerCase().endsWith('.svg') ?? false)
+  }
+  return false
+}
+
+export function getSingleCategoryIconUrl(category: Category, options?: { useFrontendProxy?: boolean }): string | null {
+  const buildUrl = options?.useFrontendProxy ? buildFrontendMediaUrl : buildMediaUrl
+  const icon = (category as any).icon
+  if (!icon) return null
+  if (typeof icon === 'string') return buildUrl(icon)
+  if (typeof icon === 'object') {
+    const iconObj = icon as any
+    return iconObj.url
+      ? buildUrl(iconObj.url)
+      : iconObj.filename
+      ? buildUrl(`/api/media/file/${iconObj.filename}`)
+      : iconObj.id
+      ? buildUrl(`/api/media/${iconObj.id}`)
+      : null
+  }
   return null
 }
 
