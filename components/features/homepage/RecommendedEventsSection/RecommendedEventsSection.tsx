@@ -4,6 +4,7 @@ import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import type { ApiResponse, Event } from '@/types'
 import { getTodayDateString } from '@/lib/utils/date'
 import dynamic from 'next/dynamic'
+import styles from './RecommendedEventsSection.module.scss'
 
 const RecommendedEventsCarousel = dynamic(
   () => import('./RecommendedEventsCarousel').then((mod) => ({ default: mod.RecommendedEventsCarousel })),
@@ -92,10 +93,8 @@ export async function RecommendedEventsSection({ locale }: RecommendedEventsSect
   }
 
   return (
-    <section style={{ marginBottom: '48px', minHeight: '550px' }}>
-      <h2 style={{ marginBottom: '24px', fontSize: '2rem', fontWeight: 'bold' }}>
-        {t('recommendedEvents')}
-      </h2>
+    <section className={styles.section}>
+      <h2 className={styles.sectionTitle}>{t('recommendedEvents')}</h2>
       <RecommendedEventsCarousel events={allEvents} locale={locale} />
     </section>
   )

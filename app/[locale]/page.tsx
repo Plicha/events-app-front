@@ -15,6 +15,7 @@ import { Suspense } from 'react'
 import { IntroSection } from '@/components/features/homepage/IntroSection/IntroSection'
 import { RecommendedEventsSection } from '@/components/features/homepage/RecommendedEventsSection/RecommendedEventsSection'
 import { RecommendedEventsSectionSkeleton } from '@/components/features/homepage/RecommendedEventsSection/RecommendedEventsSectionSkeleton'
+import styles from './page.module.scss'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -100,7 +101,7 @@ export default async function Home({
 
   return (
     <>
-      <main className="default-padding-y" style={{ paddingTop: '0' }}>
+      <main className={`default-padding-y ${styles.main}`}>
           {(homepageSettings.headline || homepageSettings.backgroundImage) && (
             <IntroSection
               headline={homepageSettings.headline}
@@ -115,7 +116,7 @@ export default async function Home({
             <RecommendedEventsSection locale={locale} />
           </Suspense>
           {events.length > 0 && (
-            <Row justify="center" style={{ marginTop: 16 }}>
+            <Row justify="center" className={styles.viewAllRow}>
               <Link href="/events">
                 <Button type="primary" size="large">
                   {tEvents('viewAllEvents')}

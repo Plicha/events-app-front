@@ -15,6 +15,7 @@ import { SortSelector } from '@/components/features/events/EventFilters/SortSele
 import { EventsList } from '@/components/features/events/EventsList/EventsList'
 import { Suspense } from 'react'
 import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
+import styles from './page.module.scss'
 
 export const revalidate = 300
 
@@ -116,7 +117,7 @@ export default async function EventsPage({
         <h1 className="title">{t('title')}</h1>
         <br />
         <EventFilters locale={locale} />
-        <Row style={{ marginTop: 16 }} justify="space-between" gutter={[16, 8]}>
+        <Row className={styles.filtersRow} justify="space-between" gutter={[16, 8]}>
           <Col xs={12} sm={12} md={4}>
             <PageSizeSelector locale={locale} currentPageSize={paginationData?.pageSize || 20} />
           </Col>
