@@ -1,17 +1,16 @@
 'use client'
 
 import '@/lib/antd-patch'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { Select, Space } from 'antd'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { getSingleCategoryIconUrl, getCategoryName, isSvgIcon } from '@/lib/utils/eventHelpers'
+import { useSvgIcons } from '@/hooks/useSvgIcons'
+import type { Category } from '@/types'
 import styles from './CategoryFilter.module.scss'
 
-interface Category {
-  id: string | number
-  name: string | { pl: string; en: string }
-  icon?: string | { url?: string; mimeType?: string; filename?: string; alt?: string }
-}
+const frontendMediaOptions = { useFrontendProxy: true } as const
 
 function CategoryFilterContent({ locale }: { locale: string }) {
   const t = useTranslations('events')
@@ -22,7 +21,6 @@ function CategoryFilterContent({ locale }: { locale: string }) {
   const [value, setValue] = useState<string | undefined>(undefined)
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
-  const [svgByUrl, setSvgByUrl] = useState<Record<string, string>>({})
 
   useEffect(() => {
     async function fetchCategories() {
@@ -75,85 +73,15 @@ function CategoryFilterContent({ locale }: { locale: string }) {
     }
   }, [searchParams, categories, loading])
 
-  const getIconUrl = (category: Category): string | null => {
-    const icon = category.icon
-    if (!icon) return null
-    if (typeof icon === 'string') return null
-    if (typeof icon === 'object' && typeof icon.url === 'string') return icon.url
-    return null
-  }
-
-  const isSvgIcon = (category: Category): boolean => {
-    const icon = category.icon
-    if (!icon || typeof icon === 'string') return false
-    return icon.mimeType === 'image/svg+xml' || (icon.url?.toLowerCase().endsWith('.svg') ?? false)
-  }
-
-  const sanitizeSvg = (raw: string): string => {
-    try {
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(raw, 'image/svg+xml')
-      const svg = doc.documentElement
-
-      svg.querySelectorAll('script, foreignObject').forEach((n) => n.remove())
-
-      svg.querySelectorAll('*').forEach((el) => {
-        Array.from(el.attributes).forEach((attr) => {
-          const name = attr.name.toLowerCase()
-          const value = attr.value
-          if (name.startsWith('on')) el.removeAttribute(attr.name)
-          if ((name === 'href' || name === 'xlink:href' || name === 'src') && /^javascript:/i.test(value)) {
-            el.removeAttribute(attr.name)
-          }
-        })
-      })
-
-      svg.setAttribute('width', '1em')
-      svg.setAttribute('height', '1em')
-      svg.setAttribute('focusable', 'false')
-      svg.setAttribute('aria-hidden', 'true')
-
-      return svg.outerHTML
-    } catch {
-      return ''
-    }
-  }
-
-  useEffect(() => {
-    if (loading) return
-    const svgCategories = categories.filter((c) => isSvgIcon(c))
-    if (svgCategories.length === 0) return
-
-    const controller = new AbortController()
-
-    ;(async () => {
-      const entries = await Promise.all(
-        svgCategories.map(async (cat) => {
-          const url = getIconUrl(cat)
-          if (!url || svgByUrl[url]) return null
-          try {
-            const res = await fetch(url, { signal: controller.signal })
-            if (!res.ok) return null
-            const text = await res.text()
-            const sanitized = sanitizeSvg(text)
-            return sanitized ? ([url, sanitized] as const) : null
-          } catch {
-            return null
-          }
-        })
-      )
-
-      const next: Record<string, string> = {}
-      for (const e of entries) {
-        if (e) next[e[0]] = e[1]
-      }
-      if (Object.keys(next).length > 0) {
-        setSvgByUrl((prev) => ({ ...prev, ...next }))
-      }
-    })()
-
-    return () => controller.abort()
-  }, [categories, loading])
+  const svgUrls = useMemo(
+    () =>
+      categories
+        .filter((c) => isSvgIcon(c))
+        .map((c) => getSingleCategoryIconUrl(c, frontendMediaOptions))
+        .filter((url): url is string => Boolean(url)),
+    [categories]
+  )
+  const { svgByUrl } = useSvgIcons(loading ? [] : svgUrls)
 
   const handleChange = (categoryId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -171,13 +99,6 @@ function CategoryFilterContent({ locale }: { locale: string }) {
     router.refresh()
   }
 
-  const getCategoryName = (category: Category): string => {
-    if (typeof category.name === 'string') {
-      return category.name
-    }
-    return category.name[locale as 'pl' | 'en'] || category.name.pl || category.name.en || ''
-  }
-
   const selectedCategory = value ? categories.find(category => String(category.id) === String(value)) : null
   const displayValue = (!loading && selectedCategory && value) ? String(value) : null
 
@@ -193,11 +114,11 @@ function CategoryFilterContent({ locale }: { locale: string }) {
       optionFilterProp="title"
       className={styles.select}
       options={categories.map((category) => ({
-        title: getCategoryName(category),
+        title: getCategoryName(category, locale),
         label: (
           <Space align="center" size={8} className={styles.spaceItem}>
             {(() => {
-              const url = getIconUrl(category)
+              const url = getSingleCategoryIconUrl(category, frontendMediaOptions)
               if (!url) return null
               if (isSvgIcon(category) && svgByUrl[url]) {
                 return (
@@ -215,7 +136,7 @@ function CategoryFilterContent({ locale }: { locale: string }) {
                 />
               )
             })()}
-            <span>{getCategoryName(category)}</span>
+            <span>{getCategoryName(category, locale)}</span>
           </Space>
         ),
         value: String(category.id),

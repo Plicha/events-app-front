@@ -5,7 +5,7 @@ import { Card, Badge, Typography, Button, Row, Col, Image, Space } from 'antd'
 import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Link } from '@/lib/i18n/routing'
 import { useTranslations } from 'next-intl'
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { CSSProperties } from 'react'
 import type { Event, Category } from '@/types'
 import { extractTextFromRichText, truncateText, getLocalizedText } from '@/lib/utils/richText'
@@ -25,15 +25,12 @@ import 'dayjs/locale/pl'
 import 'dayjs/locale/en'
 import styles from './EventCard.module.scss'
 import { useRouter } from '@/lib/i18n/routing'
+import { useSvgIcons } from '@/hooks/useSvgIcons'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
 const { Title, Text } = Typography
-
-// Shared cross-card caches to avoid repeated fetches for the same 
-const svgCache = new Map<string, string>()
-const svgPending = new Map<string, Promise<string | null>>()
 
 interface EventCardProps {
   event: Event
@@ -65,133 +62,8 @@ function formatEventDate(dateString: string, locale: string): string {
 
 const frontendMediaOptions = { useFrontendProxy: true } as const
 
-function sanitizeSvg(raw: string): string {
-  try {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(raw, 'image/svg+xml')
-    const svg = doc.documentElement
-
-    svg.querySelectorAll('script, foreignObject').forEach((n) => n.remove())
-
-    svg.querySelectorAll('*').forEach((el) => {
-      Array.from(el.attributes).forEach((attr) => {
-        const name = attr.name.toLowerCase()
-        const value = attr.value
-        if (name.startsWith('on')) el.removeAttribute(attr.name)
-        if ((name === 'href' || name === 'xlink:href' || name === 'src') && /^javascript:/i.test(value)) {
-          el.removeAttribute(attr.name)
-        }
-      })
-    })
-
-    svg.setAttribute('width', '1em')
-    svg.setAttribute('height', '1em')
-    svg.setAttribute('focusable', 'false')
-    svg.setAttribute('aria-hidden', 'true')
-
-    return svg.outerHTML
-  } catch {
-    return ''
-  }
-}
-
 function getEventSlug(event: Event): string {
   return event.slug || event.id
-}
-
-function useCategoryIcons(categories: CategoryIconMeta[]) {
-  const [svgByUrl, setSvgByUrl] = useState<Record<string, string>>({})
-  const [pendingSvg, setPendingSvg] = useState<Record<string, boolean>>({})
-  const [failedSvg, setFailedSvg] = useState<Record<string, boolean>>({})
-  const svgByUrlRef = useRef<Record<string, string>>({})
-  const failedSvgRef = useRef<Record<string, boolean>>({})
-
-  useEffect(() => {
-    svgByUrlRef.current = svgByUrl
-  }, [svgByUrl])
-
-  useEffect(() => {
-    failedSvgRef.current = failedSvg
-  }, [failedSvg])
-
-  useEffect(() => {
-    if (categories.length === 0) return
-
-    const ensureSvg = (iconUrl: string) => {
-      if (svgCache.has(iconUrl)) {
-        if (!svgByUrlRef.current[iconUrl]) {
-          const svg = svgCache.get(iconUrl)!
-          setSvgByUrl((prev) => {
-            const merged = { ...prev, [iconUrl]: svg }
-            svgByUrlRef.current = merged
-            return merged
-          })
-        }
-        return
-      }
-
-      if (svgPending.has(iconUrl)) {
-        setPendingSvg((prev) => ({ ...prev, [iconUrl]: true }))
-        svgPending.get(iconUrl)!.then((result) => {
-          if (result) {
-            setSvgByUrl((prev) => {
-              const merged = { ...prev, [iconUrl]: result }
-              svgByUrlRef.current = merged
-              return merged
-            })
-          } else {
-            setFailedSvg((prev) => ({ ...prev, [iconUrl]: true }))
-          }
-          setPendingSvg((prev) => {
-            const next = { ...prev }
-            delete next[iconUrl]
-            return next
-          })
-        })
-        return
-      }
-
-      if (failedSvgRef.current[iconUrl]) return
-
-      setPendingSvg((prev) => ({ ...prev, [iconUrl]: true }))
-      const promise = fetch(iconUrl)
-        .then(async (res) => {
-          if (!res.ok) return null
-          const text = await res.text()
-          const sanitized = sanitizeSvg(text)
-          return sanitized
-        })
-        .then((result) => {
-          if (result) {
-            svgCache.set(iconUrl, result)
-            setSvgByUrl((prev) => {
-              const merged = { ...prev, [iconUrl]: result }
-              svgByUrlRef.current = merged
-              return merged
-            })
-          } else {
-            setFailedSvg((prev) => ({ ...prev, [iconUrl]: true }))
-          }
-          return result
-        })
-        .finally(() => {
-          svgPending.delete(iconUrl)
-          setPendingSvg((prev) => {
-            const next = { ...prev }
-            delete next[iconUrl]
-            return next
-          })
-        })
-
-      svgPending.set(iconUrl, promise)
-    }
-
-    categories
-      .filter(({ iconUrl, isSvg }) => iconUrl && isSvg)
-      .forEach(({ iconUrl }) => ensureSvg(iconUrl!))
-  }, [categories])
-
-  return { svgByUrl, pendingSvg, failedSvg }
 }
 
 export function EventCard({ event, locale, layout = 'horizontal' }: EventCardProps) {
@@ -218,9 +90,14 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
     [categories, locale]
   )
 
-  const { svgByUrl, pendingSvg, failedSvg } = useCategoryIcons(
-    categoriesWithIconMeta
+  const svgUrls = useMemo(
+    () =>
+      categoriesWithIconMeta
+        .filter((c) => c.isSvg && c.iconUrl)
+        .map((c) => c.iconUrl!),
+    [categoriesWithIconMeta]
   )
+  const { svgByUrl, pendingSvg, failedSvg } = useSvgIcons(svgUrls)
 
   const title = getLocalizedText(event.title, locale)
   const summaryText = extractTextFromRichText(event.summaryAI || event.summaryRaw, locale)
@@ -315,7 +192,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
         </Text>
         
         {[venueName, cityName].filter(Boolean).length > 0 && (
-          <Text>
+          <Text className={styles.venueText}>
             <EnvironmentOutlined /> {[venueName, cityName].filter(Boolean).join(', ')}
           </Text>
         )}

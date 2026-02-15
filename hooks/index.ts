@@ -1,0 +1,1 @@
+export { useSvgIcons } from './useSvgIcons'
