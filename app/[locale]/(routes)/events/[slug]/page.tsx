@@ -1,4 +1,4 @@
-import { createTranslator } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import { setRequestLocale } from 'next-intl/server'
 import { ApiClient } from '@/lib/api/client'
 import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
@@ -20,7 +20,6 @@ import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
 import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
 import { routing } from '@/lib/i18n/routing'
-import { getMessages } from '@/lib/i18n/messages'
 
 export const revalidate = 300
 
@@ -85,8 +84,7 @@ export default async function EventDetailsPage({
 }) {
   const { slug, locale } = await params
   setRequestLocale(locale)
-  const messages = await getMessages(locale)
-  const t = createTranslator({ locale, messages, namespace: 'events' })
+  const t = await getTranslations({ locale, namespace: 'events' })
 
   const event = await fetchEvent(slug, locale)
 
@@ -94,8 +92,8 @@ export default async function EventDetailsPage({
     notFound()
   }
 
-  const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl)
-  const categoryIconUrl = getCategoryIconUrl(event.categories)
+  const coverUrl = getEventCoverUrl(event.cover, event.hostImageUrl, { useFrontendProxy: true })
+  const categoryIconUrl = getCategoryIconUrl(event.categories, { useFrontendProxy: true })
   const imageUrl = coverUrl || categoryIconUrl
   
   const title = getLocalizedText(event.title, locale)

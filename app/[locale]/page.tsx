@@ -1,7 +1,6 @@
-import { createTranslator } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import { setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
-import { getMessages } from '@/lib/i18n/messages'
 import { ApiClient } from '@/lib/api/client'
 import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import { BackendError } from '@/lib/api/errors'
@@ -33,9 +32,8 @@ export default async function Home({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const messages = await getMessages(locale)
-  const tCommon = createTranslator({ locale, messages, namespace: 'common' })
-  const tEvents = createTranslator({ locale, messages, namespace: 'events' })
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+  const tEvents = await getTranslations({ locale, namespace: 'events' })
 
 
   let homepageSettings: {

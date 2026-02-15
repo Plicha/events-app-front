@@ -1,9 +1,8 @@
 import '@/lib/antd-patch'
-import { createTranslator } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
 import { Link } from '@/lib/i18n/routing'
-import { getMessages } from '@/lib/i18n/messages'
 import { MobileMenuButton } from './MobileMenuButton'
 import styles from './Header.module.scss'
 
@@ -12,8 +11,7 @@ interface HeaderProps {
 }
 
 export async function Header({ locale }: HeaderProps) {
-  const messages = await getMessages(locale)
-  const t = createTranslator({ locale, messages, namespace: 'nav' })
+  const t = await getTranslations({ locale, namespace: 'nav' })
 
   const menuItems: MenuProps['items'] = [
     {
