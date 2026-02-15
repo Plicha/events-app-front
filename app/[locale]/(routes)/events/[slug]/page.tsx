@@ -20,6 +20,7 @@ import { RichText } from '@/components/ui/RichText'
 import styles from './page.module.scss'
 import { StaticBreadcrumb } from '@/components/layout/Breadcrumb/StaticBreadcrumb'
 import { routing } from '@/lib/i18n/routing'
+import { getMessages } from '@/lib/i18n/messages'
 
 export const revalidate = 300
 
@@ -84,7 +85,7 @@ export default async function EventDetailsPage({
 }) {
   const { slug, locale } = await params
   setRequestLocale(locale)
-  const messages = (await import(`../../../../../messages/${locale}.json`)).default
+  const messages = await getMessages(locale)
   const t = createTranslator({ locale, messages, namespace: 'events' })
 
   const event = await fetchEvent(slug, locale)
