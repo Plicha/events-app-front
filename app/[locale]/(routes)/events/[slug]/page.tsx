@@ -1,6 +1,7 @@
 import { createTranslator } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 import { ApiClient } from '@/lib/api/client'
+import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import { BackendError } from '@/lib/api/errors'
 import type { Event, ApiResponse } from '@/types'
 import { Row, Col, Image, Button, Space } from 'antd'
@@ -22,21 +23,11 @@ import { routing, Link as IntlLink } from '@/lib/i18n/routing'
 
 export const revalidate = 300
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-const COUNTY_ID = process.env.NEXT_PUBLIC_COUNTY_ID
-
-function createApiHeaders(locale: string): Record<string, string> {
-  return {
-    'x-locale': locale,
-    ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
-  }
-}
-
 export async function generateStaticParams() {
   const params: Array<{ locale: string; slug: string }> = []
 
   try {
-    const apiClient = new ApiClient(API_BASE_URL)
+    const apiClient = new ApiClient(getApiBaseUrl())
 
     for (const locale of routing.locales) {
       try {
@@ -69,7 +60,7 @@ export async function generateStaticParams() {
 }
 
 async function fetchEvent(slug: string, locale: string): Promise<Event | null> {
-  const apiClient = new ApiClient(API_BASE_URL)
+  const apiClient = new ApiClient(getApiBaseUrl())
   const headers = createApiHeaders(locale)
 
   try {

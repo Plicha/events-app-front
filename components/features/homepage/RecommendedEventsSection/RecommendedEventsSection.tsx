@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { ApiClient } from '@/lib/api/client'
+import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import type { ApiResponse, Event } from '@/types'
 import { getTodayDateString } from '@/lib/utils/date'
 import dynamic from 'next/dynamic'
@@ -8,9 +9,6 @@ const RecommendedEventsCarousel = dynamic(
   () => import('./RecommendedEventsCarousel').then((mod) => ({ default: mod.RecommendedEventsCarousel })),
   { ssr: true }
 )
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://backend:3000/api'
-const COUNTY_ID = process.env.NEXT_PUBLIC_COUNTY_ID
 
 interface RecommendedEventsSectionProps {
   locale: string
@@ -33,11 +31,8 @@ export async function RecommendedEventsSection({ locale }: RecommendedEventsSect
   let randomEvents: Event[] = []
 
   try {
-    const apiClient = new ApiClient(API_BASE_URL)
-    const headers: Record<string, string> = {
-      'x-locale': locale,
-      ...(COUNTY_ID && { 'x-county-id': COUNTY_ID }),
-    }
+    const apiClient = new ApiClient(getApiBaseUrl())
+    const headers = createApiHeaders(locale)
 
     try {
       const promotedResponse = await apiClient.get<ApiResponse<Event>>('/public/events', {
