@@ -2,7 +2,7 @@
 
 import '@/lib/antd-patch'
 import { Card, Badge, Typography, Button, Row, Col, Image, Space } from 'antd'
-import { CalendarOutlined, EnvironmentOutlined, TagOutlined, LoadingOutlined } from '@ant-design/icons'
+import { CalendarOutlined, EnvironmentOutlined, TagOutlined } from '@ant-design/icons'
 import { Link } from '@/lib/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
@@ -14,6 +14,7 @@ import {
   getCategoryIconUrl,
   getSingleCategoryIconUrl,
   getCategoryName,
+  getCategoryColorClass,
   getCityName,
   getVenueName,
   isSvgIcon,
@@ -26,6 +27,7 @@ import 'dayjs/locale/en'
 import styles from './EventCard.module.scss'
 import { useRouter } from '@/lib/i18n/routing'
 import { useSvgIcons } from '@/hooks/useSvgIcons'
+import { CategoryIconDisplay } from '@/components/ui/CategoryIconDisplay'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -135,8 +137,7 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
         {categories.length > 0 && (
           <Space size={8} wrap className={styles.categoryBadgeWrapper}> 
             {categoriesWithIconMeta.map(({ category, iconUrl, isSvg, name }) => {
-              const colorClass = category.color ? `bg-${category.color}` : ''
-              const badgeClasses = [styles.categoryBadge, colorClass].filter(Boolean).join(' ')
+              const badgeClasses = [styles.categoryBadge, getCategoryColorClass(category)].join(' ')
               
               return (
                 <Space 
@@ -145,36 +146,14 @@ export function EventCard({ event, locale, layout = 'horizontal' }: EventCardPro
                   align="center"
                   className={badgeClasses}
                 >
-                  {iconUrl && (
-                    <>
-                      {isSvg
-                        ? svgByUrl[iconUrl]
-                          ? (
-                            <span
-                              className={styles.categoryIconWrap}
-                              dangerouslySetInnerHTML={{ __html: svgByUrl[iconUrl] }}
-                            />
-                          )
-                          : pendingSvg[iconUrl]
-                            ? <LoadingOutlined className={styles.categoryIconSpin} />
-                            : failedSvg[iconUrl]
-                            ? (
-                              <img
-                                src={iconUrl}
-                                alt="icon"
-                                className={styles.categoryIcon}
-                              />
-                            )
-                            : null
-                        : (
-                          <img
-                            src={iconUrl}
-                            alt="icon"
-                            className={styles.categoryIcon}
-                          />
-                        )}
-                    </>
-                  )}
+                  <CategoryIconDisplay
+                    iconUrl={iconUrl}
+                    isSvg={isSvg}
+                    svgByUrl={svgByUrl}
+                    pendingSvg={pendingSvg}
+                    failedSvg={failedSvg}
+                    size={16}
+                  />
                   <span>{name}</span>
                 </Space>
               )

@@ -1,0 +1,32 @@
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: inherit;
+
+  :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.iconImg {
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+
+  :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.iconSpin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}

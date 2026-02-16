@@ -26,7 +26,7 @@
   --grad-c3: #f97316;
 
   background: linear-gradient(var(--grad-angle), var(--grad-c1) 0%, var(--grad-c2) 50%, var(--grad-c3) 100%);
-  animation: heroGradientMorph 10s linear infinite;
+  animation: heroGradientMorph 30s linear infinite;
   will-change: background;
 }
 

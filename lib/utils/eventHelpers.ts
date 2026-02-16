@@ -134,6 +134,10 @@ export function getSingleCategoryIconUrl(category: Category, options?: { useFron
   return null
 }
 
+export function getCategoryColorClass(category: Category): string {
+  return category?.color ? `bg-${category.color}` : 'bg-grey'
+}
+
 export function getCategoryName(category: Category, locale: string): string {
   if (typeof category.name === 'string') {
     return category.name
