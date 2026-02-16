@@ -5,6 +5,9 @@ import type { ApiResponse, Event } from '@/types'
 import { getTodayDateString } from '@/lib/utils/date'
 import dynamic from 'next/dynamic'
 import styles from './RecommendedEventsSection.module.scss'
+import { Row } from 'antd'
+import { Link } from '@/lib/i18n/routing'
+import { ArrowRightOutlined } from '@ant-design/icons'
 
 const RecommendedEventsCarousel = dynamic(
   () => import('./RecommendedEventsCarousel').then((mod) => ({ default: mod.RecommendedEventsCarousel })),
@@ -94,8 +97,24 @@ export async function RecommendedEventsSection({ locale }: RecommendedEventsSect
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>{t('recommendedEvents')}</h2>
+      <Row justify="space-between" className={styles.viewAllRow}>
+        <h2 className={styles.sectionTitle}>{t('recommendedEvents')}</h2>
+        {allEvents.length  > 0 && (
+          <Link href="/events" className={styles.viewAllLink}>
+              <span className={styles.viewAllLinkText}>{t('viewAllEvents')}</span>
+              <ArrowRightOutlined className={styles.viewAllLinkIcon} />
+          </Link>
+          )}
+      </Row>
       <RecommendedEventsCarousel events={allEvents} locale={locale} />
+      {allEvents.length  > 0 && (
+        <Row justify="center" className={styles.viewAllRow}>
+          <Link href="/events" className={styles.viewAllLinkMobile}>
+              <span className={styles.viewAllLinkText}>{t('viewAllEvents')}</span>
+              <ArrowRightOutlined className={styles.viewAllLinkIcon} />
+          </Link> 
+          </Row>
+          )}
     </section>
   )
 }

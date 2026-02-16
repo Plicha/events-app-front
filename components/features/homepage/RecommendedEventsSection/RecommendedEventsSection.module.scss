@@ -187,6 +187,7 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
   @media (min-width: $breakpoint-lg) {
     display: flex;
   }
+
 }
 
 .navButtonPrevMobile,
@@ -217,6 +218,9 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
     opacity: $nav-button-disabled-opacity;
     cursor: not-allowed;
   }
+  @media (max-width: $breakpoint-sm) {
+    display: none;
+  }
 }
 
 .slide {
@@ -230,3 +234,43 @@ $slide-total-spacing-mobile-large: ($slides-per-view-mobile-large - 1) * $slide-
   }
 }
 
+.viewAllLink, .viewAllLinkMobile{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $primary-color;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  .viewAllLinkText{
+    display: inline-block;
+    padding-bottom: 5px;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.3s ease;
+  }
+  .viewAllLinkIcon{
+    transition: transform 0.3s ease;
+    margin-bottom: 8px;
+    display: block;
+  }
+  border-bottom: 1px solid transparent;
+  &:hover, &:focus, &:active {
+    color: $primary-color;
+    .viewAllLinkIcon{
+      transform: translateX(3px);
+    }
+    .viewAllLinkText{
+      border-bottom: 1px solid $primary-color;
+    }
+  }
+  @media (max-width: $breakpoint-sm) {
+    display: none;
+  }
+}
+.viewAllLinkMobile{
+  display: none;
+  @media (max-width: $breakpoint-sm) {
+    display: flex;
+  }
+}
