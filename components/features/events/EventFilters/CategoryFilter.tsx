@@ -6,8 +6,7 @@ import { Select, Space } from 'antd'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { getSingleCategoryIconUrl, getCategoryName, isSvgIcon } from '@/lib/utils/eventHelpers'
-import { useSvgIcons } from '@/hooks/useSvgIcons'
-import type { Category } from '@/types'
+import { useSvgIcons, useCategories } from '@/hooks'
 import styles from './CategoryFilter.module.scss'
 
 const frontendMediaOptions = { useFrontendProxy: true } as const
@@ -17,39 +16,9 @@ function CategoryFilterContent({ locale }: { locale: string }) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const { categories, loading } = useCategories(locale)
 
   const [value, setValue] = useState<string | undefined>(undefined)
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        setLoading(true)
-        const headers: Record<string, string> = {
-          'x-locale': locale,
-        }
-
-        const response = await fetch('/api/public/categories', {
-          headers,
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories')
-        }
-
-        const data = await response.json()
-        setCategories(data.docs || [])
-      } catch (error) {
-        console.error('Error fetching categories:', error)
-        setCategories([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchCategories()
-  }, [locale])
 
   useEffect(() => {
     if (loading) return

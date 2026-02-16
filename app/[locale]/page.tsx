@@ -4,11 +4,11 @@ import { routing } from '@/lib/i18n/routing'
 import { ApiClient } from '@/lib/api/client'
 import { getApiBaseUrl, createApiHeaders } from '@/lib/api/config'
 import { BackendError } from '@/lib/api/errors'
-import type { ApiResponse, Event } from '@/types'
+import type { ApiResponse, Event, Category } from '@/types'
 import { Button } from 'antd'
 import { Link } from '@/lib/i18n/routing'
 import { getTodayDateString } from '@/lib/utils/date'
-import { EventsList } from '@/components/features/events'
+import { EventsList, CategoriesSection } from '@/components/features/events'
 import { Row } from 'antd'
 import { Suspense } from 'react'
 import { IntroSection, RecommendedEventsSection, RecommendedEventsSectionSkeleton } from '@/components/features/homepage'
@@ -33,42 +33,19 @@ export default async function Home({
   const tCommon = await getTranslations({ locale, namespace: 'common' })
   const tEvents = await getTranslations({ locale, namespace: 'events' })
 
+  const apiClient = new ApiClient(getApiBaseUrl())
+  const headers = createApiHeaders(locale)
+  const todayDateString = getTodayDateString()
 
-  let homepageSettings: {
-    headline: string
-    backgroundImage: { url: string; alt: string } | null
-  } = {
-    headline: '',
-    backgroundImage: null,
-  }
-
-  try {
-    const apiClient = new ApiClient(getApiBaseUrl())
-    const headers = createApiHeaders(locale)
-
-    const settings = await apiClient.get<{
+  const [settingsResult, eventsResult, categoriesResult] = await Promise.allSettled([
+    apiClient.get<{
       headline: string
       backgroundImage: { url: string; alt: string } | null
     }>('/public/homepage-settings', {
       headers,
       next: { revalidate: 300 },
-    })
-
-    homepageSettings = settings
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Failed to fetch homepage settings:', error)
-    }
-  }
-
-  let events: Event[] = []
-  const todayDateString = getTodayDateString()
-
-  try {
-    const apiClient = new ApiClient(getApiBaseUrl())
-    const headers = createApiHeaders(locale)
-
-    const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+    }),
+    apiClient.get<ApiResponse<Event>>('/public/events', {
       params: {
         locale: locale,
         from: todayDateString,
@@ -77,15 +54,36 @@ export default async function Home({
       },
       headers,
       next: { revalidate: 60 },
-    })
-    
-    events = Array.isArray(response.docs) ? response.docs.slice(0, 2) : []
-  } catch (error) {
-    if (error instanceof BackendError && error.statusCode === 404) {
-      if (process.env.NODE_ENV === 'production') {
-        console.warn(`[HomePage] No events found (404) for date: ${todayDateString}`)
-      }
-    } else {
+    }),
+    apiClient.get<{ docs: Category[] }>('/public/categories', {
+      headers,
+      next: { revalidate: 300 },
+    }),
+  ])
+
+  let homepageSettings: {
+    headline: string
+    backgroundImage: { url: string; alt: string } | null
+  } = {
+    headline: '',
+    backgroundImage: null,
+  }
+  if (settingsResult.status === 'fulfilled') {
+    homepageSettings = settingsResult.value
+  } else if (process.env.NODE_ENV === 'development') {
+    console.warn('Failed to fetch homepage settings:', settingsResult.reason)
+  }
+
+  let events: Event[] = []
+  if (eventsResult.status === 'fulfilled') {
+    events = Array.isArray(eventsResult.value.docs) ? eventsResult.value.docs.slice(0, 2) : []
+  } else {
+    const error = eventsResult.reason
+    const is404 = error instanceof BackendError && error.statusCode === 404
+    if (is404 && process.env.NODE_ENV === 'production') {
+      console.warn(`[HomePage] No events found (404) for date: ${todayDateString}`)
+    }
+    if (!is404) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       console.error(`[HomePage] Failed to fetch events:`, {
         error: errorMessage,
@@ -93,6 +91,13 @@ export default async function Home({
         locale,
       })
     }
+  }
+
+  let categories: Category[] = []
+  if (categoriesResult.status === 'fulfilled') {
+    categories = categoriesResult.value.docs || []
+  } else if (process.env.NODE_ENV === 'development') {
+    console.warn('[HomePage] Failed to fetch categories:', categoriesResult.reason)
   }
 
   return (
@@ -120,6 +125,8 @@ export default async function Home({
               </Link>
             </Row>
           )}
+
+          <CategoriesSection locale={locale} categories={categories} />
         </div>
       </main>
     </>

@@ -1,1 +1,80 @@
-{"common": {"title": "Wydarzenia w Twoim mieście", "description": "Aplikacja do przeglądania wydarzeń", "loading": "Ładowanie...", "error": "Wystąpił błąd", "back": "Wstecz", "home": "Strona główna", "inDevelopment": "Ta strona jest obecnie w rozwoju", "inDevelopmentDescription": "Pracujemy nad tą funkcjonalnością. Tymczasem sprawdź dostępne wydarzenia!"}, "nav": {"events": "Wydarzenia", "about": "O nas", "contact": "Kontakt"}, "events": {"title": "Wydarzenia", "noEvents": "Brak wydarzeń", "listPlaceholder": "Niebawem pojawią się tu wydarzenia", "filter": "Filtruj", "details": "Szczegóły", "date": "Data", "location": "Lokalizacja", "category": "Kategoria", "searchPlaceholder": "Szukaj wydarzeń...", "dateRangePresets": {"today": "Dziś", "tomorrow": "Jutro", "thisWeekend": "Ten weekend", "next7Days": "Najbliższe 7 dni", "next30Days": "Najbliższe 30 dni"}, "cityPlaceholder": "Wybierz miejscowość", "cityFilterLabel": "Miejscowość", "categoryPlaceholder": "Wybierz kategorię", "categoryFilterLabel": "Kategoria", "sortAsc": "Data: najwcześniejsze", "sortDesc": "Data: najpóźniejsze", "sortPlaceholder": "Sortuj", "viewDetails": "Zobacz więcej", "viewAllEvents": "Zobacz wszystkie wydarzenia", "recommendedEvents": "Warto zobaczyć", "free": "Bezpłatne", "promoted": "Promowane", "noImage": "Brak obrazu", "source": "Źródło", "breadcrumb": {"home": "Strona główna", "events": "Wydarzenia"}, "pagination": {"showTotal": "{from}-{to} z {total} wydarzeń"}, "carousel": {"prevSlide": "Poprzedni slajd", "nextSlide": "Następny slajd"}}, "about": {"title": "O nas", "content": "Aplikacja do przeglądania wydarzeń w Twoim mieście."}, "contact": {"title": "Kontakt", "form": {"name": "Imię i nazwisko", "email": "Email", "message": "Wiadomość", "submit": "Wyślij"}}, "breadcrumb": {"home": "Strona główna", "events": "Wydarzenia", "about": "O nas", "contact": "Kontakt"}}
+{
+  "common": {
+    "title": "Wydarzenia w Twoim mieście",
+    "description": "Aplikacja do przeglądania wydarzeń",
+    "loading": "Ładowanie...",
+    "error": "Wystąpił błąd",
+    "back": "Wstecz",
+    "home": "Strona główna",
+    "inDevelopment": "Ta strona jest obecnie w rozwoju",
+    "inDevelopmentDescription": "Pracujemy nad tą funkcjonalnością. Tymczasem sprawdź dostępne wydarzenia!"
+  },
+  "nav": {
+    "events": "Wydarzenia",
+    "about": "O nas",
+    "contact": "Kontakt"
+  },
+  "events": {
+    "title": "Wydarzenia",
+    "noEvents": "Brak wydarzeń",
+    "listPlaceholder": "Niebawem pojawią się tu wydarzenia",
+    "filter": "Filtruj",
+    "details": "Szczegóły",
+    "date": "Data",
+    "location": "Lokalizacja",
+    "category": "Kategoria",
+    "searchPlaceholder": "Szukaj wydarzeń...",
+    "dateRangePresets": {
+      "today": "Dziś",
+      "tomorrow": "Jutro",
+      "thisWeekend": "Ten weekend",
+      "next7Days": "Najbliższe 7 dni",
+      "next30Days": "Najbliższe 30 dni"
+    },
+    "cityPlaceholder": "Wybierz miejscowość",
+    "cityFilterLabel": "Miejscowość",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "categoryFilterLabel": "Kategoria",
+    "sortAsc": "Data: najwcześniejsze",
+    "sortDesc": "Data: najpóźniejsze",
+    "sortPlaceholder": "Sortuj",
+    "viewDetails": "Zobacz więcej",
+    "viewAllEvents": "Zobacz wszystkie wydarzenia",
+    "recommendedEvents": "Warto zobaczyć",
+    "free": "Bezpłatne",
+    "promoted": "Promowane",
+    "noImage": "Brak obrazu",
+    "source": "Źródło",
+    "breadcrumb": {
+      "home": "Strona główna",
+      "events": "Wydarzenia"
+    },
+    "pagination": {
+      "showTotal": "{from}-{to} z {total} wydarzeń"
+    },
+    "carousel": {
+      "prevSlide": "Poprzedni slajd",
+      "nextSlide": "Następny slajd"
+    },
+    "categoriesSectionTitle": "Kategorie wydarzeń"
+  },
+  "about": {
+    "title": "O nas",
+    "content": "Aplikacja do przeglądania wydarzeń w Twoim mieście."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "form": {
+      "name": "Imię i nazwisko",
+      "email": "Email",
+      "message": "Wiadomość",
+      "submit": "Wyślij"
+    }
+  },
+  "breadcrumb": {
+    "home": "Strona główna",
+    "events": "Wydarzenia",
+    "about": "O nas",
+    "contact": "Kontakt"
+  }
+}

@@ -1,8 +1,8 @@
 @import '@/styles/variables.scss';
 
 .section {
-  margin-bottom: 48px;
   min-height: 550px;
+  margin-bottom: 40px;
 }
 
 .sectionTitle {
@@ -15,7 +15,7 @@
 $carousel-container-extension: 112px;
 $carousel-container-margin: 56px;
 $carousel-gap: 16px;
-$carousel-padding-bottom: 40px;
+$carousel-padding-bottom: 0;
 $carousel-wrapper-padding-y: 8px;
 $carousel-wrapper-padding-x: 8px;
 
