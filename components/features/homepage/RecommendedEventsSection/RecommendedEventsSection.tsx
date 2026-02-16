@@ -5,6 +5,9 @@ import type { ApiResponse, Event } from '@/types'
 import { getTodayDateString } from '@/lib/utils/date'
 import dynamic from 'next/dynamic'
 import styles from './RecommendedEventsSection.module.scss'
+import { Row } from 'antd'
+import { Link } from '@/lib/i18n/routing'
+import { ArrowRightOutlined } from '@ant-design/icons'
 
 const RecommendedEventsCarousel = dynamic(
   () => import('./RecommendedEventsCarousel').then((mod) => ({ default: mod.RecommendedEventsCarousel })),
@@ -24,68 +27,60 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled
 }
 
+async function fetchPromotedEvents(
+  apiClient: ApiClient,
+  locale: string,
+  todayDateString: string
+): Promise<Event[]> {
+  const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+    params: { isPromoted: 'true', from: todayDateString, sort: 'asc', limit: '100' },
+    headers: createApiHeaders(locale),
+    next: { revalidate: 60 },
+  })
+  const docs = Array.isArray(response.docs) ? response.docs : []
+  const today = new Date().toISOString()
+  return docs.filter(
+    (event) => !event.promotedUntil || new Date(event.promotedUntil) >= new Date(today)
+  )
+}
+
+async function fetchUpcomingEvents(
+  apiClient: ApiClient,
+  locale: string,
+  todayDateString: string
+): Promise<Event[]> {
+  const response = await apiClient.get<ApiResponse<Event>>('/public/events', {
+    params: { from: todayDateString, sort: 'asc', limit: '50' },
+    headers: createApiHeaders(locale),
+    next: { revalidate: 60 },
+  })
+  return Array.isArray(response.docs) ? response.docs : []
+}
+
+function unwrapSettled<T>(result: PromiseSettledResult<T>, fallback: T, label: string): T {
+  if (result.status === 'fulfilled') return result.value
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(`[RecommendedEventsSection] ${label}:`, result.reason)
+  }
+  return fallback
+}
+
 export async function RecommendedEventsSection({ locale }: RecommendedEventsSectionProps) {
   const t = await getTranslations({ locale, namespace: 'events' })
   const todayDateString = getTodayDateString()
-  
-  let promotedEvents: Event[] = []
-  let randomEvents: Event[] = []
+  const apiClient = new ApiClient(getApiBaseUrl())
 
-  try {
-    const apiClient = new ApiClient(getApiBaseUrl())
-    const headers = createApiHeaders(locale)
+  const [promotedResult, upcomingResult] = await Promise.allSettled([
+    fetchPromotedEvents(apiClient, locale, todayDateString),
+    fetchUpcomingEvents(apiClient, locale, todayDateString),
+  ])
 
-    try {
-      const promotedResponse = await apiClient.get<ApiResponse<Event>>('/public/events', {
-        params: {
-          isPromoted: 'true',
-          from: todayDateString,
-          sort: 'asc',
-          limit: '100',
-        },
-        headers,
-        next: { revalidate: 60 },
-      })
-      const allPromoted = Array.isArray(promotedResponse.docs) ? promotedResponse.docs : []
-      const today = new Date().toISOString()
-      promotedEvents = allPromoted.filter(event => {
-        if (!event.promotedUntil) return true
-        return new Date(event.promotedUntil) >= new Date(today)
-      })
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[RecommendedEventsSection] Failed to fetch promoted events:', error)
-      }
-    }
+  const promotedEvents = unwrapSettled(promotedResult, [], 'Failed to fetch promoted events')
+  const allUpcomingEvents = unwrapSettled(upcomingResult, [], 'Failed to fetch upcoming events')
 
-    try {
-      const upcomingResponse = await apiClient.get<ApiResponse<Event>>('/public/events', {
-        params: {
-          from: todayDateString,
-          sort: 'asc',
-          limit: '50',
-        },
-        headers,
-        next: { revalidate: 60 },
-      })
-      
-      const allUpcomingEvents = Array.isArray(upcomingResponse.docs) ? upcomingResponse.docs : []
-      
-      const promotedEventIds = new Set(promotedEvents.map(e => e.id))
-      const nonPromotedUpcoming = allUpcomingEvents.filter(e => !promotedEventIds.has(e.id))
-      const shuffled = shuffleArray(nonPromotedUpcoming)
-      randomEvents = shuffled.slice(0, 5)
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[RecommendedEventsSection] Failed to fetch upcoming events:', error)
-      }
-    }
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('[RecommendedEventsSection] Error:', error)
-    }
-  }
-
+  const promotedEventIds = new Set(promotedEvents.map((e) => e.id))
+  const nonPromotedUpcoming = allUpcomingEvents.filter((e) => !promotedEventIds.has(e.id))
+  const randomEvents = shuffleArray(nonPromotedUpcoming).slice(0, 5)
   const allEvents = [...promotedEvents, ...randomEvents]
 
   if (allEvents.length === 0) {
@@ -94,8 +89,20 @@ export async function RecommendedEventsSection({ locale }: RecommendedEventsSect
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>{t('recommendedEvents')}</h2>
+      <Row justify="space-between" className={styles.viewAllRow}>
+        <h2 className={styles.sectionTitle}>{t('recommendedEvents')}</h2>
+        <Link href="/events" className={styles.viewAllLink}>
+            <span className={styles.viewAllLinkText}>{t('viewAllEvents')}</span>
+            <ArrowRightOutlined className={styles.viewAllLinkIcon} />
+        </Link>
+      </Row>
       <RecommendedEventsCarousel events={allEvents} locale={locale} />
+      <Row justify="center" className={styles.viewAllRow}>
+        <Link href="/events" className={styles.viewAllLinkMobile}>
+            <span className={styles.viewAllLinkText}>{t('viewAllEvents')}</span>
+            <ArrowRightOutlined className={styles.viewAllLinkIcon} />
+        </Link> 
+      </Row>
     </section>
   )
 }

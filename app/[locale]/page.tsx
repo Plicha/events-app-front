@@ -116,15 +116,6 @@ export default async function Home({
           <Suspense fallback={<RecommendedEventsSectionSkeleton />}>
             <RecommendedEventsSection locale={locale} />
           </Suspense>
-          {events.length > 0 && (
-            <Row justify="center" className={styles.viewAllRow}>
-              <Link href="/events">
-                <Button type="primary" size="large">
-                  {tEvents('viewAllEvents')}
-                </Button>
-              </Link>
-            </Row>
-          )}
 
           <CategoriesSection locale={locale} categories={categories} />
         </div>
