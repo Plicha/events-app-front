@@ -47,6 +47,12 @@
 .ant-picker-cell-inner, .ant-picker-cell-inner::before{
   border-radius: 16px !important;
 }
+.ant-picker-dropdown .ant-picker-time-panel-column 
+>li.ant-picker-time-panel-cell.ant-picker-time-panel-cell-selected
+>.ant-picker-time-panel-cell-inner{
+  color: $white-color !important;
+  background-color: $primary-color !important;
+}
 
 .ant-input-lg, .ant-picker-large {
   border-radius: 40px !important;
@@ -56,7 +62,7 @@
   padding: 7px 16px !important;
 }
 
-.ant-input-affix-wrapper-lg {
+.ant-input-affix-wrapper-lg, .ant-input-lg {
   padding: 4px 16px !important;
   border-radius: 40px !important;
   &.ant-input-compact-first-item{

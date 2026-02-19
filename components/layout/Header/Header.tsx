@@ -38,6 +38,14 @@ export async function Header({ locale }: HeaderProps) {
         </Link>
       ),
     },
+    {
+      key: '/add-event',
+      label: (
+        <Link href="/add-event">
+          {t('addEvent')}
+        </Link>
+      ),
+    },
   ]
 
   const selectedKey: string | null = null

@@ -12,7 +12,8 @@
   "nav": {
     "events": "Events",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "addEvent": "Add event"
   },
   "events": {
     "title": "Events",
@@ -71,10 +72,56 @@
       "submit": "Submit"
     }
   },
+  "addEvent": {
+    "title": "Add event",
+    "breadcrumb": "Add event",
+    "email": "Email",
+    "emailRequired": "Enter your email",
+    "emailInvalid": "Invalid email format",
+    "emailMax": "Email can have at most 254 characters",
+    "titleLabel": "Event title",
+    "titleRequired": "Enter title",
+    "titleMin": "Title must be at least 2 characters",
+    "titleMax": "Title can have at most {max} characters",
+    "startsAtLabel": "Start date and time",
+    "endsAtLabel": "End date and time",
+    "endsAtPlaceholder": "Optional",
+    "endsAtHint": "Most events have only a start date – you can leave this field empty.",
+    "endsAtAfterStartError": "End date must be after or equal to start date",
+    "dateRequired": "Enter start date",
+    "descriptionLabel": "Event description",
+    "descriptionRequired": "Enter description",
+    "descriptionMax": "Description can have at most {max} characters",
+    "venue": "Venue",
+    "city": "City",
+    "category": "Category",
+    "categoryPlaceholder": "Select category",
+    "categoryRequired": "Select category",
+    "sourceLink": "Source link",
+    "priceLabel": "Price",
+    "priceFree": "Free",
+    "pricePaid": "Paid",
+    "priceAmount": "Amount (PLN)",
+    "contentRights": "I declare that I have the right to publish these contents and photos",
+    "contentRightsRequired": "Consent required",
+    "termsAccepted": "I accept the terms and privacy policy",
+    "termsRequired": "Terms acceptance required",
+    "photo": "Event photo",
+    "photoUploadText": "Drag and drop or click to select",
+    "photoUploadHint": "Max size: {max} MB. Allowed: JPG, PNG, WebP",
+    "photoSizeError": "Photo can be at most {max} MB",
+    "photoTypeError": "Allowed formats: JPG, PNG, WebP",
+    "submit": "Submit",
+    "successMessage": "Submission sent. We will contact you soon.",
+    "submitError": "An error occurred. Please try again later.",
+    "rateLimitError": "Submission limit exceeded. Try again tomorrow.",
+    "charactersUsed": "{current} / {max} characters"
+  },
   "breadcrumb": {
     "home": "Home",
     "events": "Events",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "addEvent": "Add event"
   }
 }

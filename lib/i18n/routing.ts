@@ -21,6 +21,10 @@ export const routing = defineRouting({
     '/contact': {
       pl: '/kontakt',
       en: '/contact'
+    },
+    '/add-event': {
+      pl: '/dodaj-wydarzenie',
+      en: '/add-event'
     }
   }
 });

@@ -2,7 +2,7 @@ import '@/lib/antd-patch'
 import { NextIntlClientProvider } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { ConfigProvider } from 'antd'
+import { App, ConfigProvider } from 'antd'
 import { notFound } from 'next/navigation'
 import { routing } from '@/lib/i18n/routing'
 import { getMessages } from '@/lib/i18n/messages'
@@ -63,8 +63,10 @@ export default async function LocaleLayout({
                 },
               }}
             >
-              <Header locale={locale} />
-              {children}
+              <App>
+                <Header locale={locale} />
+                {children}
+              </App>
             </ConfigProvider>
           </NextIntlClientProvider>
         </AntdRegistry>

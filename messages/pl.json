@@ -12,7 +12,8 @@
   "nav": {
     "events": "Wydarzenia",
     "about": "O nas",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "addEvent": "Dodaj wydarzenie"
   },
   "events": {
     "title": "Wydarzenia",
@@ -71,10 +72,56 @@
       "submit": "Wyślij"
     }
   },
+  "addEvent": {
+    "title": "Dodaj wydarzenie",
+    "breadcrumb": "Dodaj wydarzenie",
+    "email": "Email",
+    "emailRequired": "Podaj adres email",
+    "emailInvalid": "Nieprawidłowy format email",
+    "emailMax": "Email może mieć maksymalnie 254 znaki",
+    "titleLabel": "Tytuł wydarzenia",
+    "titleRequired": "Podaj tytuł",
+    "titleMin": "Tytuł musi mieć co najmniej 2 znaki",
+    "titleMax": "Tytuł może mieć maksymalnie {max} znaków",
+    "startsAtLabel": "Data i godzina rozpoczęcia",
+    "endsAtLabel": "Data i godzina zakończenia",
+    "endsAtPlaceholder": "Opcjonalnie",
+    "endsAtHint": "Pole jest opcjonalne. Jeśli wydarzenie kończy się w tym samym dniu co rozpoczyna, możesz je pominąć.",
+    "endsAtAfterStartError": "Data zakończenia musi być późniejsza lub równa dacie rozpoczęcia",
+    "dateRequired": "Podaj datę rozpoczęcia",
+    "descriptionLabel": "Opis wydarzenia",
+    "descriptionRequired": "Podaj opis",
+    "descriptionMax": "Opis może mieć maksymalnie {max} znaków",
+    "venue": "Miejsce wydarzenia",
+    "city": "Miejscowość",
+    "category": "Kategoria",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "categoryRequired": "Wybierz kategorię",
+    "sourceLink": "Link źródłowy",
+    "priceLabel": "Cena",
+    "priceFree": "Bezpłatne",
+    "pricePaid": "Płatne",
+    "priceAmount": "Kwota (PLN)",
+    "contentRights": "Oświadczam, że mam prawo do publikacji tych treści i zdjęć",
+    "contentRightsRequired": "Wymagana zgoda",
+    "termsAccepted": "Akceptuję regulamin i politykę prywatności",
+    "termsRequired": "Wymagana akceptacja regulaminu",
+    "photo": "Zdjęcie wydarzenia",
+    "photoUploadText": "Przeciągnij zdjęcie lub kliknij, aby wybrać",
+    "photoUploadHint": "Maksymalny rozmiar: {max} MB. Dozwolone: JPG, PNG, WebP",
+    "photoSizeError": "Zdjęcie może mieć maksymalnie {max} MB",
+    "photoTypeError": "Dozwolone formaty: JPG, PNG, WebP",
+    "submit": "Wyślij zgłoszenie",
+    "successMessage": "Zgłoszenie zostało wysłane. Skontaktujemy się wkrótce.",
+    "submitError": "Wystąpił błąd. Spróbuj ponownie później.",
+    "rateLimitError": "Przekroczono limit zgłoszeń. Spróbuj ponownie jutro.",
+    "charactersUsed": "{current} / {max} znaków"
+  },
   "breadcrumb": {
     "home": "Strona główna",
     "events": "Wydarzenia",
     "about": "O nas",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "addEvent": "Dodaj wydarzenie"
   }
 }
